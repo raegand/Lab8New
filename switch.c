@@ -14,6 +14,7 @@
 #define DATA 0
 #define INFO 1
 #define CHAR 1
+#define ISCHILD 1
 #define HUNDRED_MILLI_SEC 10
 
 
@@ -44,6 +45,20 @@ void transmitAll(SwitchState* s_state, packetBuffer* pb, int in)
    for(i = 0; i < s_state->out_size; i++) {
       if(i!= in) {
          linkSend(&(s_state->link_out[i]), pb);
+      }
+   }
+}
+
+void transmitChildren(SwitchState* s_state, packetBuffer* pb, int in)
+{
+   int i;
+   for(i = 0; i < s_state->out_size; i++) {
+      if(i!= in) {
+         int x = IsChild(&(s_state->f_table), 
+         s_state->link_out[i].uniPipeInfo.physIdDst);
+         if(x == ISCHILD) {
+            linkSend(&(s_state->link_out[i]), pb);
+         }
       }
    }
 }
@@ -127,7 +142,7 @@ void switchMain(SwitchState* s_state) {
 					 * when we receive a packet */
 					in_link = GetOutLink(&(s_state->f_table), tmpbuff.srcaddr);
 					/* else send it to all but incoming link */
-               transmitAll(s_state, &tmpbuff, in_link);
+               transmitChildren(s_state, &tmpbuff, in_link);
 				}
 			}
       } else {

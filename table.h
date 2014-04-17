@@ -23,6 +23,7 @@ void UpdateTable(Table* table, int valid, int dst_addr, int out_link_id);
 int  GetOutLink(Table* table, int dst_addr);
 
 
+int IsChild(Table * table, int dst_addr);
 void AddTable(Table* table, int valid, int dst_addr, int out_link_id);
 int  FindTableIndex(Table* table, int dst_addr);
 void UpdateTableEntry(Table* table, int dst_addr, int valid, int new_out_link);

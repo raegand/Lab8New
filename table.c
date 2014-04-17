@@ -67,6 +67,20 @@ void UpdateTableByIndex(Table* table, int index, int valid, int new_out_link) {
 	table->entries[index].valid = valid;
 }
 
+int IsChild(Table * table, int dst_addr)
+{
+   int index = FindTableIndex(table, dst_addr);
+   if (index == ERROR) {
+      return -1;
+   }
+   if(table->entries[index].parent == CHILD) {
+      return 1;
+   } else {
+      return -1;
+   }
+
+}
+
 void UpdateParentData(Table * table, int dst_addr)
 {
    int index = FindTableIndex(table, dst_addr);
