@@ -120,16 +120,22 @@ if (link->linkType==UNIPIPE) {
       findWord(word, buffer, 3); /* Packet Type */
       pbuff->type = ascii2Int(word);      
 
-      findWord(word, buffer, 4); /* Length */
+      findWord(word, buffer, 4);
+      pbuff->root = ascii2Int(word);  /* Current Root  */
+      
+      findWord(word, buffer, 5);
+      pbuff->distance = ascii2Int(word); /* Current Distance  */
+     
+      findWord(word, buffer, 6); /* Length */
       pbuff->length = ascii2Int(word);
 
-      findWord(word, buffer, 5); /* End */
+      findWord(word, buffer, 7); /* End */
       pbuff->end = ascii2Int(word);
 
-      findWord(word, buffer, 6); /* Start */
+      findWord(word, buffer, 8); /* Start */
       pbuff->start = ascii2Int(word);
 
-      findWord(word, buffer, 7); /* Payload */
+      findWord(word, buffer, 9); /* Payload */
 
       /* 
        * We will transform the payload so that 
@@ -200,14 +206,21 @@ int2Ascii(word, pbuff->srcaddr);  /* Append source address */
 appendWithSpace(sendbuff, word);
 
 int2Ascii(word, pbuff->type); /* Type of Data */
+appendwithSpace(sendbuff, word);
+
+int2Ascii(word, pbuff->root); /* Current root */
+appendwithSpace(sendbuff, word);
+
+int2Ascii(word, pbuff->distance); /* Current Distance */ 
+appendwithSpace(sendbuff, word);
 
 int2Ascii(word, pbuff->length);  /* Append payload length */
 appendWithSpace(sendbuff, word);
 
-int2Ascii(word, pbuff->end);
+int2Ascii(word, pbuff->end); /* end value */
 appendWithSpace(sendbuff, word);
 
-int2Ascii(word, pbuff->start);
+int2Ascii(word, pbuff->start); /* start value */
 appendWithSpace(sendbuff, word);
 
 /* 
