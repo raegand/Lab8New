@@ -4,17 +4,58 @@
 #include "switch.h"
 #include "link.h"
 #include "queue.h"
+#define INF = 999999
 
+/* Is actually arbitrary value for Neighbor */
+#define NEIGHBOR 1000
 #define TEN_MILLI_SEC 10000
 #define PIPE_WRITE 1
 #define PIPE_READ 0
+#define DATA 0
+#define INFO 1
+#define CHAR 1
+
 
 void switchInit(SwitchState* s_state, int physid) {
 	s_state->in_size = 0;
 	s_state->out_size = 0;
 	s_state->physId = physid;
+   s_state->rootId = physid; /* initially rootid is physid */
 	InitQueue(&(s_state->packet_q));
 	InitTable(&(s_state->f_table));
+}
+
+void transmitAll(SwitchState* s_state, packetBuffer* pb, int in)
+{
+   int i;
+   for(i = 0; i < s_state->out_size; i++) {
+      if(i != in) {
+         linkSend(&(s_state->link_out[i]), pb);
+      }
+   }
+}
+
+void transmitRoot(SwitchState* s_state)
+{
+   packetBuffer temp;
+   temp.type = INFO;
+   temp.srcaddr = NEIGHBOR;
+   temp.dstaddr = NEIGHBOR;
+   temp.length = CHAR;
+   temp.valid = 1;
+   temp.start = 1;
+   temp.end = 1;
+   temp.payload =  
+   transmitAll(s_state, &temp, NEIGHBOR);
+}
+
+void updateRoot(SwitchState* s_state, packetBuffer* pb) 
+{
+   //First Character Should be Root
+   int root = (int)pb->payload[0];
+   if(root < s_state->rootId) {
+     s_state->rootId = root;
+   }
 }
 
 void switchMain(SwitchState* s_state) {
@@ -31,11 +72,15 @@ void switchMain(SwitchState* s_state) {
 									  &tmpbuff);	
 			/* if there is a packet */
 			if (packet_size > 0) {
+            if(tmpbuff.type != INFO) {
 				/* either add value to table, or update existing value 
 				 * NOTE - we are using srcaddr to put into table */
 				UpdateTable(&(s_state->f_table), tmpbuff.valid, 
 							tmpbuff.srcaddr, i);
 				PushQueue(&(s_state->packet_q), tmpbuff);
+            } else {
+               updateRoot(s_state, &tmpbuff); 
+            }
 			}
 		}
 		/* if queue is not empty */
@@ -51,15 +96,12 @@ void switchMain(SwitchState* s_state) {
 					 * when we receive a packet */
 					in_link = GetOutLink(&(s_state->f_table), tmpbuff.srcaddr);
 					/* else send it to all but incoming link */
-					for (i = 0; i < s_state->out_size; i++) {
-						if (i != in_link) {
-							linkSend(&(s_state->link_out[i]), &tmpbuff);
-						}
-					}
 				}
 			}
 		}
-
+      
+      //periodical transmit roots
+      transmitRoot(s_state);
 		usleep(TEN_MILLI_SEC);
 	}
 

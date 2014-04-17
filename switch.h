@@ -11,7 +11,8 @@
 
 typedef struct {
 	int physId;
-	int in_size;
+	int rootId;
+   int in_size;
 	int out_size;
 	LinkInfo* link_in;
 	LinkInfo* link_out;

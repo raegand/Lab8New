@@ -8,6 +8,7 @@ typedef struct { /* Packet buffer */
    int dstaddr;  /* Destination addres */
    int length;   /* Length of packet */
    char payload[PAYLOAD_LENGTH + 1];  /* Payload section */
+   int type; /* type of packet */
    int valid;
    /* for send buffer to indicate end */
    int start;
