@@ -126,7 +126,10 @@ void hostTransmitPacket(hostState * hstate, char replymsg[])
 	hstate->sendPacketBuff.type = 0;
    hstate->sendPacketBuff.end = 0;
 	hstate->sendPacketBuff.start = 0;
-	if (hstate->sendBuffer.pos == 0) {
+	hstate->sendPacketBuff.root = 0;
+   hstate->sendPacketBuff.distance = 0;
+   
+   if (hstate->sendBuffer.pos == 0) {
 		hstate->sendPacketBuff.start = 1;
 	}
 	if (hstate->sendBuffer.valid) {
@@ -262,11 +265,11 @@ while(1) {
     * receive packet buffer
     */
    if (tmpbuff.dstaddr == hstate->netaddr && tmpbuff.valid == 1 && tmpbuff.type == 0) {
-	  /* if there is already something in the buffer; clear it */
-	  if (tmpbuff.start == 1) {
-		  memset(hstate->rcvBuffer.data, 0, sizeof(hstate->rcvBuffer.data));
-		  hstate->rcvBuffer.length = 0;
-		  hstate->rcvflag = 0;
+        /* if there is already something in the buffer; clear it */
+        if (tmpbuff.start == 1) {
+           memset(hstate->rcvBuffer.data, 0, sizeof(hstate->rcvBuffer.data));
+           hstate->rcvBuffer.length = 0;
+           hstate->rcvflag = 0;
 	  }
 	  strcat(hstate->rcvBuffer.data, tmpbuff.payload);
 	  hstate->rcvBuffer.length += tmpbuff.length;
