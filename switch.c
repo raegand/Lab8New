@@ -25,7 +25,7 @@ void writeSwitchData(SwitchState * s_state)
    fprintf(debug, "- Root: %d - ", s_state->rootId);
    fprintf(debug, "Dist: %d \n", s_state->rootDist);
    fclose(debug); 
-   SwitchDebugTable(&(s_state->f_table));
+   SwitchDebugTable(&(s_state->f_table), s_state->physId);
 }
 
 void switchInit(SwitchState* s_state, int physid) {

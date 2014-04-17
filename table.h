@@ -30,7 +30,7 @@ void UpdateTableByIndex(Table* table, int index, int valid, int new_out_link);
 void DisplayTable(Table* table);
 void UpdateChildData(Table * table, int dst_addr);
 void UpdateParentData(Table * table, int dst_addr);
-void SwitchDebugTable(Table * table);
+void SwitchDebugTable(Table * table, int id);
 
 #endif
 

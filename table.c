@@ -82,22 +82,21 @@ void UpdateChildData(Table * table, int dst_addr)
    if (index == ERROR) {
       return;
    }
-   table->entries[index].parent = PARENT;
+   table->entries[index].parent = CHILD;
 }
 
-void SwitchDebugTable(Table * table)
+void SwitchDebugTable(Table * table, int id)
 {
    FILE * debug = fopen("DEBUG_SWITCH", "a");
    int i;
-   for(i = 0; i > table->size; i++) {
+   for(i = 0; i < table->size; i++) {
       TableEntry temp = table->entries[i];
       if(temp.parent == PARENT) {
-         fprintf(debug,"Parent: %d \n", temp.dst_addr);
+         fprintf(debug,"SwitchID: %d - Parent: %d \n", id, temp.dst_addr);
       } else {
-         fprintf(debug,"Child: %d \n", temp.dst_addr);
+         fprintf(debug,"SwitchID: %d - Child: %d \n", id, temp.dst_addr);
       }
    }
-   fprintf(debug, " - - - - - - - - - \n");
    fclose(debug);
 }
 
