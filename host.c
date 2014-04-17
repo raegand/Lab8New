@@ -256,7 +256,6 @@ while(1) {
 	   hostTransmitPacket(hstate, replymsg);
    }
 
-
    /* Check if there is an incoming packet */
    length = linkReceive(&(hstate->linkin), &tmpbuff);
 
@@ -265,7 +264,8 @@ while(1) {
     * is the host's network address then store the packet in the
     * receive packet buffer
     */
-   if (tmpbuff.dstaddr == hstate->netaddr && tmpbuff.valid == 1 && tmpbuff.type == DATA) {
+   if (tmpbuff.dstaddr == hstate->netaddr && tmpbuff.valid == 1 
+      && tmpbuff.type == DATA) {
      /* if there is already something in the buffer; clear it */
 	  if (tmpbuff.start == 1) {
 		  memset(hstate->rcvBuffer.data, 0, sizeof(hstate->rcvBuffer.data));

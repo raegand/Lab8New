@@ -48,6 +48,7 @@
 
 #define PIPEREAD  0
 #define PIPEWRITE 1
+//#define PACKET_SIZE 420
 #define PACKET_SIZE 414
 
 /* Closes a link */
@@ -255,8 +256,8 @@ if (link->linkType==UNIPIPE) {
 }
 
 /* Used for DEBUG -- trace packets being sent */
-/*
+
 printf("Link %d transmitted\n",link->linkID);
-*/
+
 }
 

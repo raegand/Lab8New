@@ -16,6 +16,16 @@
 #define CHAR 1
 
 
+void writeSwitchData(SwitchState * s_state) 
+{
+   /* Writes switch data to file for debug purposes */
+   FILE * debug = fopen("DEBUG_SWITCH", "a");
+   fprintf(debug, "Switch ID: %d ", s_state->physId);
+   fprintf(debug, "- Root: %d - ", s_state->rootId);
+   fprintf(debug, "Dist: %d \n", s_state->rootDist);
+   fclose(debug); 
+}
+
 void switchInit(SwitchState* s_state, int physid) {
 	s_state->in_size = 0;
 	s_state->out_size = 0;
@@ -84,11 +94,13 @@ void switchMain(SwitchState* s_state) {
 			/* if there is a packet */
 			if (packet_size > 0) {
             if(tmpbuff.type != INFO) {
-				/* either add value to table, or update existing value 
+	
+   			/* either add value to table, or update existing value 
 				 * NOTE - we are using srcaddr to put into table */
 				UpdateTable(&(s_state->f_table), tmpbuff.valid, 
 							tmpbuff.srcaddr, i);
 				PushQueue(&(s_state->packet_q), tmpbuff);
+     
             } else {
                updateRoot(s_state, &tmpbuff); 
             }
@@ -111,9 +123,9 @@ void switchMain(SwitchState* s_state) {
 			}
       } else {
          //periodical transmit roots
-         transmitRoot(s_state);
+   //      transmitRoot(s_state);
       }
-      
+   //   writeSwitchData(s_state);      
 		usleep(TEN_MILLI_SEC);
 	}
 
