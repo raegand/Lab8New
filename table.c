@@ -71,7 +71,7 @@ int IsChild(Table * table, int dst_addr)
 {
    int index = FindTableIndex(table, dst_addr);
    if (index == ERROR) {
-      return -1;
+      return 1; /* If entry is missing, it is likely a host, thus CHILD */
    }
    if(table->entries[index].parent == CHILD) {
       return 1;
