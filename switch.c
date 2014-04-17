@@ -56,7 +56,8 @@ void transmitRoot(SwitchState* s_state)
    temp.valid = 1;
    temp.start = 1;
    temp.end = 1;
-   temp.distance = s_state->rootDist; 
+   temp.distance = s_state->rootDist;
+   temp.root = s_state->rootId; 
    transmitAll(s_state, &temp, NEIGHBOR);
 }
 
@@ -65,10 +66,11 @@ void updateRoot(SwitchState* s_state, packetBuffer* pb)
    /* If neighbors root is smaller than mine, switch root */
    if(pb->root < s_state->rootId) {
      s_state->rootId = pb->root;
+     return;
    }
 
    /* If neighbors rootid is ME, I am root, therefor dist = 0 */
-   if(pb->root == s_state->rootId) {
+   if(pb->root == s_state->physId) {
       s_state->rootDist = 0;
    }
 
@@ -121,10 +123,11 @@ void switchMain(SwitchState* s_state) {
 				}
 			}
       } else {
-         //periodical transmit roots
-   //      transmitRoot(s_state);
+         //periodical transmit roots, only when packetqueue is empty
+         transmitRoot(s_state);
       }
-   //   writeSwitchData(s_state);      
+      /* DEBUG PURPOSE ONLY */
+      writeSwitchData(s_state);      
 		usleep(TEN_MILLI_SEC);
 	}
 

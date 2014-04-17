@@ -257,7 +257,7 @@ if (link->linkType==UNIPIPE) {
 
 /* Used for DEBUG -- trace packets being sent */
 
-printf("Link %d transmitted\n",link->linkID);
+//printf("Link %d transmitted\n",link->linkID);
 
 }
 
