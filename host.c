@@ -39,8 +39,6 @@
 #define MAXBUFFER 3000
 #define PIPEWRITE 1 
 #define PIPEREAD  0
-#define DATA 0
-#define INFO 1
 #define TENMILLISEC 10000   /* 10 millisecond sleep */
 
 /* 
@@ -125,9 +123,7 @@ void hostTransmitPacket(hostState * hstate, char replymsg[])
 	hstate->sendPacketBuff.dstaddr = hstate->sendBuffer.dstaddr;
 	hstate->sendPacketBuff.srcaddr = hstate->netaddr;
 	hstate->sendPacketBuff.length = length;
-   hstate->sendPacketBuff.type = DATA;
-	hstate->sendPacketBuff.distance = 0;
-   hstate->sendPacketBuff.root = 0;
+	hstate->sendPacketBuff.type = 0;
    hstate->sendPacketBuff.end = 0;
 	hstate->sendPacketBuff.start = 0;
 	if (hstate->sendBuffer.pos == 0) {
@@ -256,6 +252,7 @@ while(1) {
 	   hostTransmitPacket(hstate, replymsg);
    }
 
+
    /* Check if there is an incoming packet */
    length = linkReceive(&(hstate->linkin), &tmpbuff);
 
@@ -264,9 +261,8 @@ while(1) {
     * is the host's network address then store the packet in the
     * receive packet buffer
     */
-   if (tmpbuff.dstaddr == hstate->netaddr && tmpbuff.valid == 1 
-      && tmpbuff.type == DATA) {
-     /* if there is already something in the buffer; clear it */
+   if (tmpbuff.dstaddr == hstate->netaddr && tmpbuff.valid == 1 && tmpbuff.type == 0) {
+	  /* if there is already something in the buffer; clear it */
 	  if (tmpbuff.start == 1) {
 		  memset(hstate->rcvBuffer.data, 0, sizeof(hstate->rcvBuffer.data));
 		  hstate->rcvBuffer.length = 0;
@@ -359,12 +355,9 @@ hostInitSendPacketBuff(&(hstate->rcvPacketBuff));
  */
 void hostInitSendPacketBuff(packetBuffer * packetbuff)
 {
-   packetbuff->valid = 0;
-   packetbuff->end = 0;
-   packetbuff->start = 0;
-   packetbuff->root = 0;
-   packetbuff->distance = 0;
-   packetbuff->type = DATA;
+packetbuff->valid = 0;
+packetbuff->end = 0;
+packetbuff->start = 0;
 }
 
 

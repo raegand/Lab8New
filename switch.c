@@ -6,8 +6,8 @@
 #include "queue.h"
 
 /* Is actually arbitrary value for Neighbor */
-#define NEIGHBOR 1000
-#define INF  999999
+#define INF  99999
+#define NEIGHBOR 99999
 #define TEN_MILLI_SEC 10000
 #define PIPE_WRITE 1
 #define PIPE_READ 0
@@ -40,7 +40,7 @@ void transmitAll(SwitchState* s_state, packetBuffer* pb, int in)
 {
    int i;
    for(i = 0; i < s_state->out_size; i++) {
-      if(i != in) {
+      if(i!= in) {
          linkSend(&(s_state->link_out[i]), pb);
       }
    }
@@ -50,7 +50,7 @@ void transmitRoot(SwitchState* s_state)
 {
    packetBuffer temp;
    temp.type = INFO;
-   temp.srcaddr = NEIGHBOR;
+   temp.srcaddr = s_state->physId;
    temp.dstaddr = NEIGHBOR;
    temp.length = CHAR;
    temp.valid = 1;
@@ -94,13 +94,11 @@ void switchMain(SwitchState* s_state) {
 			/* if there is a packet */
 			if (packet_size > 0) {
             if(tmpbuff.type != INFO) {
-	
-   			/* either add value to table, or update existing value 
-				 * NOTE - we are using srcaddr to put into table */
-				UpdateTable(&(s_state->f_table), tmpbuff.valid, 
-							tmpbuff.srcaddr, i);
-				PushQueue(&(s_state->packet_q), tmpbuff);
-     
+               /* either add value to table, or update existing value 
+                * NOTE - we are using srcaddr to put into table */
+               UpdateTable(&(s_state->f_table), tmpbuff.valid, 
+                        tmpbuff.srcaddr, i);
+               PushQueue(&(s_state->packet_q), tmpbuff);
             } else {
                updateRoot(s_state, &tmpbuff); 
             }
@@ -119,6 +117,7 @@ void switchMain(SwitchState* s_state) {
 					 * when we receive a packet */
 					in_link = GetOutLink(&(s_state->f_table), tmpbuff.srcaddr);
 					/* else send it to all but incoming link */
+               transmitAll(s_state, &tmpbuff, in_link);
 				}
 			}
       } else {
