@@ -83,6 +83,7 @@ void UpdateRoot(SwitchState* s_state, packetBuffer* pb)
    /* If neighbors root is smaller than mine, switch root */
    if(pb->root < s_state->rootId) {
      s_state->rootId = pb->root;
+     s_state->rootDist = INF; /* Reset Distance */
      return;
    }
 
