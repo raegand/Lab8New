@@ -126,7 +126,9 @@ void hostTransmitPacket(hostState * hstate, char replymsg[])
 	hstate->sendPacketBuff.srcaddr = hstate->netaddr;
 	hstate->sendPacketBuff.length = length;
    hstate->sendPacketBuff.type = DATA;
-	hstate->sendPacketBuff.end = 0;
+	hstate->sendPacketBuff.distance = 0;
+   hstate->sendPacketBuff.root = 0;
+   hstate->sendPacketBuff.end = 0;
 	hstate->sendPacketBuff.start = 0;
 	if (hstate->sendBuffer.pos == 0) {
 		hstate->sendPacketBuff.start = 1;
@@ -357,9 +359,12 @@ hostInitSendPacketBuff(&(hstate->rcvPacketBuff));
  */
 void hostInitSendPacketBuff(packetBuffer * packetbuff)
 {
-packetbuff->valid = 0;
-packetbuff->end = 0;
-packetbuff->start = 0;
+   packetbuff->valid = 0;
+   packetbuff->end = 0;
+   packetbuff->start = 0;
+   packetbuff->root = 0;
+   packetbuff->distance = 0;
+   packetbuff->type = DATA;
 }
 
 
