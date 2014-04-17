@@ -52,10 +52,20 @@ void transmitRoot(SwitchState* s_state)
 
 void updateRoot(SwitchState* s_state, packetBuffer* pb) 
 {
-   //First Character Should be Root
-   int root = (int)pb->payload[0];
-   if(root < s_state->rootId) {
+   /* If neighbors root is smaller than mine, switch root */
+   if(pb->root < s_state->rootId) {
      s_state->rootId = root;
+   }
+
+   /* If neighbors rootid is ME, I am root, therefor dist = 0 */
+   if(pb->root == s_state->rootId) {
+      s_state->rootDist = 0;
+   }
+
+   /* If my neighbors distance to root is smaller than mine,
+    * my distance is neighbors + 1 */
+   if(pb->distance < s_state->rootDist) {
+      s_state->rootDist = pb->distance + 1;
    }
 }
 
