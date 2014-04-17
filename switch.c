@@ -14,6 +14,7 @@
 #define DATA 0
 #define INFO 1
 #define CHAR 1
+#define HUNDRED_MILLI_SEC 10
 
 
 void writeSwitchData(SwitchState * s_state) 
@@ -24,6 +25,7 @@ void writeSwitchData(SwitchState * s_state)
    fprintf(debug, "- Root: %d - ", s_state->rootId);
    fprintf(debug, "Dist: %d \n", s_state->rootDist);
    fclose(debug); 
+   SwitchDebugTable(&(s_state->f_table));
 }
 
 void switchInit(SwitchState* s_state, int physid) {
@@ -61,7 +63,7 @@ void transmitRoot(SwitchState* s_state)
    transmitAll(s_state, &temp, NEIGHBOR);
 }
 
-void updateRoot(SwitchState* s_state, packetBuffer* pb) 
+void UpdateRoot(SwitchState* s_state, packetBuffer* pb) 
 {
    /* If neighbors root is smaller than mine, switch root */
    if(pb->root < s_state->rootId) {
@@ -78,6 +80,9 @@ void updateRoot(SwitchState* s_state, packetBuffer* pb)
     * my distance is neighbors + 1 */
    if(pb->distance < s_state->rootDist) {
       s_state->rootDist = pb->distance + 1;
+      UpdateParentData(&(s_state->f_table), pb->srcaddr);
+   } else {
+      UpdateChildData(&(s_state->f_table), pb->srcaddr);
    }
 }
 
@@ -87,6 +92,7 @@ void switchMain(SwitchState* s_state) {
 	int out_link = 0;
 	int in_link = 0;
 	packetBuffer tmpbuff;
+   int timer = 0;
 	while(1) {
 		/* go through all incoming links and check if there is something
 		 * to be received */
@@ -102,7 +108,9 @@ void switchMain(SwitchState* s_state) {
                         tmpbuff.srcaddr, i);
                PushQueue(&(s_state->packet_q), tmpbuff);
             } else {
-               updateRoot(s_state, &tmpbuff); 
+               UpdateTable(&(s_state->f_table), tmpbuff.valid, 
+                        tmpbuff.srcaddr, i);
+               UpdateRoot(s_state, &tmpbuff); 
             }
 			}
 		}
@@ -124,11 +132,15 @@ void switchMain(SwitchState* s_state) {
 			}
       } else {
          //periodical transmit roots, only when packetqueue is empty
-         transmitRoot(s_state);
+         if(timer == HUNDRED_MILLI_SEC) {
+            transmitRoot(s_state);
+            timer = 0;
+         }
       }
       /* DEBUG PURPOSE ONLY */
       writeSwitchData(s_state);      
 		usleep(TEN_MILLI_SEC);
+      timer++;
 	}
 
 }

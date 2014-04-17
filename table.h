@@ -8,8 +8,9 @@
 
 typedef struct {
 	int out_link_id;
-	int	dst_addr; 
+   int dst_addr; 
 	int valid;
+   int parent;
 } TableEntry;
 
 typedef struct {
@@ -27,6 +28,9 @@ int  FindTableIndex(Table* table, int dst_addr);
 void UpdateTableEntry(Table* table, int dst_addr, int valid, int new_out_link);
 void UpdateTableByIndex(Table* table, int index, int valid, int new_out_link);
 void DisplayTable(Table* table);
+void UpdateChildData(Table * table, int dst_addr);
+void UpdateParentData(Table * table, int dst_addr);
+void SwitchDebugTable(Table * table);
 
 #endif
 
