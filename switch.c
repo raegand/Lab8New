@@ -4,10 +4,10 @@
 #include "switch.h"
 #include "link.h"
 #include "queue.h"
-#define INF = 999999
 
 /* Is actually arbitrary value for Neighbor */
 #define NEIGHBOR 1000
+#define INF  999999
 #define TEN_MILLI_SEC 10000
 #define PIPE_WRITE 1
 #define PIPE_READ 0
@@ -21,6 +21,7 @@ void switchInit(SwitchState* s_state, int physid) {
 	s_state->out_size = 0;
 	s_state->physId = physid;
    s_state->rootId = physid; /* initially rootid is physid */
+   s_state->rootDist = INF; /* initially infinite distance from root */
 	InitQueue(&(s_state->packet_q));
 	InitTable(&(s_state->f_table));
 }
@@ -45,7 +46,7 @@ void transmitRoot(SwitchState* s_state)
    temp.valid = 1;
    temp.start = 1;
    temp.end = 1;
-   temp.payload =  
+   temp.distance = s_state->rootDist; 
    transmitAll(s_state, &temp, NEIGHBOR);
 }
 
@@ -98,10 +99,11 @@ void switchMain(SwitchState* s_state) {
 					/* else send it to all but incoming link */
 				}
 			}
-		}
+      } else {
+         //periodical transmit roots
+         transmitRoot(s_state);
+      }
       
-      //periodical transmit roots
-      transmitRoot(s_state);
 		usleep(TEN_MILLI_SEC);
 	}
 

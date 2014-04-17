@@ -12,6 +12,7 @@
 typedef struct {
 	int physId;
 	int rootId;
+   int rootDist;
    int in_size;
 	int out_size;
 	LinkInfo* link_in;
