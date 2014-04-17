@@ -206,13 +206,13 @@ int2Ascii(word, pbuff->srcaddr);  /* Append source address */
 appendWithSpace(sendbuff, word);
 
 int2Ascii(word, pbuff->type); /* Type of Data */
-appendwithSpace(sendbuff, word);
+appendWithSpace(sendbuff, word);
 
 int2Ascii(word, pbuff->root); /* Current root */
-appendwithSpace(sendbuff, word);
+appendWithSpace(sendbuff, word);
 
 int2Ascii(word, pbuff->distance); /* Current Distance */ 
-appendwithSpace(sendbuff, word);
+appendWithSpace(sendbuff, word);
 
 int2Ascii(word, pbuff->length);  /* Append payload length */
 appendWithSpace(sendbuff, word);
