@@ -7,8 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4B2A643A1900CCC5000ABBCF /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B2A64391900CCC5000ABBCF /* main.c */; };
 		4B2A643C1900CCC5000ABBCF /* EE367_Lab8.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B2A643B1900CCC5000ABBCF /* EE367_Lab8.1 */; };
+		4BA2EE0A1900DD4E00E7915B /* host.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BA2EDF61900DD4E00E7915B /* host.c */; };
+		4BA2EE0B1900DD4E00E7915B /* link.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BA2EDF81900DD4E00E7915B /* link.c */; };
+		4BA2EE0C1900DD4E00E7915B /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BA2EDFA1900DD4E00E7915B /* main.c */; };
+		4BA2EE0D1900DD4E00E7915B /* man.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BA2EDFC1900DD4E00E7915B /* man.c */; };
+		4BA2EE0E1900DD4E00E7915B /* man2.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BA2EDFE1900DD4E00E7915B /* man2.c */; };
+		4BA2EE0F1900DD4E00E7915B /* net.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BA2EDFF1900DD4E00E7915B /* net.c */; };
+		4BA2EE101900DD4E00E7915B /* queue.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BA2EE011900DD4E00E7915B /* queue.c */; };
+		4BA2EE111900DD4E00E7915B /* switch.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BA2EE031900DD4E00E7915B /* switch.c */; };
+		4BA2EE121900DD4E00E7915B /* table.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BA2EE051900DD4E00E7915B /* table.c */; };
+		4BA2EE131900DD4E00E7915B /* testlink.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BA2EE071900DD4E00E7915B /* testlink.c */; };
+		4BA2EE141900DD4E00E7915B /* utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BA2EE081900DD4E00E7915B /* utilities.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,8 +36,28 @@
 
 /* Begin PBXFileReference section */
 		4B2A64361900CCC5000ABBCF /* EE367_Lab8 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EE367_Lab8; sourceTree = BUILT_PRODUCTS_DIR; };
-		4B2A64391900CCC5000ABBCF /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		4B2A643B1900CCC5000ABBCF /* EE367_Lab8.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = EE367_Lab8.1; sourceTree = "<group>"; };
+		4BA2EDF51900DD4E00E7915B /* databuff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = databuff.h; sourceTree = "<group>"; };
+		4BA2EDF61900DD4E00E7915B /* host.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = host.c; sourceTree = "<group>"; };
+		4BA2EDF71900DD4E00E7915B /* host.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = host.h; sourceTree = "<group>"; };
+		4BA2EDF81900DD4E00E7915B /* link.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = link.c; sourceTree = "<group>"; };
+		4BA2EDF91900DD4E00E7915B /* link.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = link.h; sourceTree = "<group>"; };
+		4BA2EDFA1900DD4E00E7915B /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		4BA2EDFB1900DD4E00E7915B /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
+		4BA2EDFC1900DD4E00E7915B /* man.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = man.c; sourceTree = "<group>"; };
+		4BA2EDFD1900DD4E00E7915B /* man.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = man.h; sourceTree = "<group>"; };
+		4BA2EDFE1900DD4E00E7915B /* man2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = man2.c; sourceTree = "<group>"; };
+		4BA2EDFF1900DD4E00E7915B /* net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = net.c; sourceTree = "<group>"; };
+		4BA2EE001900DD4E00E7915B /* net.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = net.h; sourceTree = "<group>"; };
+		4BA2EE011900DD4E00E7915B /* queue.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = queue.c; sourceTree = "<group>"; };
+		4BA2EE021900DD4E00E7915B /* queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = queue.h; sourceTree = "<group>"; };
+		4BA2EE031900DD4E00E7915B /* switch.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = switch.c; sourceTree = "<group>"; };
+		4BA2EE041900DD4E00E7915B /* switch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = switch.h; sourceTree = "<group>"; };
+		4BA2EE051900DD4E00E7915B /* table.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = table.c; sourceTree = "<group>"; };
+		4BA2EE061900DD4E00E7915B /* table.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = table.h; sourceTree = "<group>"; };
+		4BA2EE071900DD4E00E7915B /* testlink.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = testlink.c; sourceTree = "<group>"; };
+		4BA2EE081900DD4E00E7915B /* utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utilities.c; sourceTree = "<group>"; };
+		4BA2EE091900DD4E00E7915B /* utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utilities.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,8 +90,28 @@
 		4B2A64381900CCC5000ABBCF /* EE367_Lab8 */ = {
 			isa = PBXGroup;
 			children = (
-				4B2A64391900CCC5000ABBCF /* main.c */,
 				4B2A643B1900CCC5000ABBCF /* EE367_Lab8.1 */,
+				4BA2EDF51900DD4E00E7915B /* databuff.h */,
+				4BA2EDF61900DD4E00E7915B /* host.c */,
+				4BA2EDF71900DD4E00E7915B /* host.h */,
+				4BA2EDF81900DD4E00E7915B /* link.c */,
+				4BA2EDF91900DD4E00E7915B /* link.h */,
+				4BA2EDFA1900DD4E00E7915B /* main.c */,
+				4BA2EDFB1900DD4E00E7915B /* main.h */,
+				4BA2EDFC1900DD4E00E7915B /* man.c */,
+				4BA2EDFD1900DD4E00E7915B /* man.h */,
+				4BA2EDFE1900DD4E00E7915B /* man2.c */,
+				4BA2EDFF1900DD4E00E7915B /* net.c */,
+				4BA2EE001900DD4E00E7915B /* net.h */,
+				4BA2EE011900DD4E00E7915B /* queue.c */,
+				4BA2EE021900DD4E00E7915B /* queue.h */,
+				4BA2EE031900DD4E00E7915B /* switch.c */,
+				4BA2EE041900DD4E00E7915B /* switch.h */,
+				4BA2EE051900DD4E00E7915B /* table.c */,
+				4BA2EE061900DD4E00E7915B /* table.h */,
+				4BA2EE071900DD4E00E7915B /* testlink.c */,
+				4BA2EE081900DD4E00E7915B /* utilities.c */,
+				4BA2EE091900DD4E00E7915B /* utilities.h */,
 			);
 			path = EE367_Lab8;
 			sourceTree = "<group>";
@@ -117,7 +167,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4B2A643A1900CCC5000ABBCF /* main.c in Sources */,
+				4BA2EE0E1900DD4E00E7915B /* man2.c in Sources */,
+				4BA2EE0A1900DD4E00E7915B /* host.c in Sources */,
+				4BA2EE0B1900DD4E00E7915B /* link.c in Sources */,
+				4BA2EE131900DD4E00E7915B /* testlink.c in Sources */,
+				4BA2EE121900DD4E00E7915B /* table.c in Sources */,
+				4BA2EE111900DD4E00E7915B /* switch.c in Sources */,
+				4BA2EE101900DD4E00E7915B /* queue.c in Sources */,
+				4BA2EE0F1900DD4E00E7915B /* net.c in Sources */,
+				4BA2EE0D1900DD4E00E7915B /* man.c in Sources */,
+				4BA2EE141900DD4E00E7915B /* utilities.c in Sources */,
+				4BA2EE0C1900DD4E00E7915B /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -227,6 +287,7 @@
 				4B2A64411900CCC5000ABBCF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
