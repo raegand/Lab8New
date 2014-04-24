@@ -112,7 +112,27 @@ if (link->linkType==UNIPIPE) {
        */
 
       buffer[n] = '\0';
-   
+  
+  
+   /*
+    * DATA = 0;
+    * INFO = 1;
+    * DNS NAME = 2;
+    * DNS ACK = 3;
+    * DNS REQ = 4;
+    * DL REQ = 5;
+    *
+    * DATA: DST,SRC,TYPE,LENGTH,END,START
+    * INFO: DST,SRC,TYPE,ROOT, DIST, LENGTH
+    * DNS NAME: DST, SRC, TYPE, LENGTH, NAME
+    * DNS ACK: DST, SRC, TYPE, LENGTH, FLAG
+    * DNS REQ: DST, SRC, TYPE, LENGTH, NAME
+    * DL REQ: DST, SRC, TYPE, LENGTH, NAME
+    *
+    */
+
+
+      /* MANDATORY */
       findWord(word, buffer, 1); /* Destination address */
       pbuff->dstaddr = ascii2Int(word);
   
@@ -122,23 +142,37 @@ if (link->linkType==UNIPIPE) {
       findWord(word, buffer, 3); /* Packet Type */
       pbuff->type = ascii2Int(word);      
 
-      findWord(word, buffer, 4);
-      pbuff->root = ascii2Int(word);  /* Current Root  */
+      switch(pbuff->type) {
+      case 0:
+         findWord(word, buffer, 4); /* Length */
+         pbuff->length = ascii2Int(word);
+
+         findWord(word, buffer, 5); /* End */
+         pbuff->end = ascii2Int(word);
+
+         findWord(word, buffer, 6); /* Start */
+         pbuff->start = ascii2Int(word);
+
+         findWord(word, buffer, 7); /* Payload */
+         break;
+      case 1:
+         findWord(word, buffer, 4);
+         pbuff->root = ascii2Int(word);  /* Current Root  */
+         
+         findWord(word, buffer, 5);
+         pbuff->distance = ascii2Int(word); /* Current Distance  */
+
+         findWord(word, buffer, 6); /* Length */
+         pbuff->length = ascii2Int(word);
+
+         break;
+      case 2: break;
+      case 3: break;
+      case 4: break;
+      case 5: break;
       
-      findWord(word, buffer, 5);
-      pbuff->distance = ascii2Int(word); /* Current Distance  */
-     
-      findWord(word, buffer, 6); /* Length */
-      pbuff->length = ascii2Int(word);
-
-      findWord(word, buffer, 7); /* End */
-      pbuff->end = ascii2Int(word);
-
-      findWord(word, buffer, 8); /* Start */
-      pbuff->start = ascii2Int(word);
-
-      findWord(word, buffer, 9); /* Payload */
-
+      }
+  
       /* 
        * We will transform the payload so that 
        *
@@ -210,20 +244,52 @@ appendWithSpace(sendbuff, word);
 int2Ascii(word, pbuff->type); /* Type of Data */
 appendWithSpace(sendbuff, word);
 
-int2Ascii(word, pbuff->root); /* Current root */
-appendWithSpace(sendbuff, word);
+/*
+ * DATA = 0;
+ * INFO = 1;
+ * DNS NAME = 2;
+ * DNS ACK = 3;
+ * DNS REQ = 4;
+ * DL REQ = 5;
+ *
+ * DATA: DST,SRC,TYPE,LENGTH,END,START
+ * INFO: DST,SRC,TYPE,ROOT, DIST
+ * DNS NAME: DST, SRC, TYPE, NAME
+ * DNS ACK: DST, SRC, TYPE, FLAG
+ * DNS REQ: DST, SRC, TYPE, NAME
+ * DL REQ: DST, SRC, TYPE, NAME
+ *
+ */
 
-int2Ascii(word, pbuff->distance); /* Current Distance */ 
-appendWithSpace(sendbuff, word);
+   switch(pbuff->type) {
+   case 0:
+      int2Ascii(word, pbuff->length);  /* Append payload length */
+      appendWithSpace(sendbuff, word);
 
-int2Ascii(word, pbuff->length);  /* Append payload length */
-appendWithSpace(sendbuff, word);
+      int2Ascii(word, pbuff->end); /* end value */
+      appendWithSpace(sendbuff, word);
 
-int2Ascii(word, pbuff->end); /* end value */
-appendWithSpace(sendbuff, word);
+      int2Ascii(word, pbuff->start); /* start value */
+      appendWithSpace(sendbuff, word);
+      break;
+   case 1:
+      int2Ascii(word, pbuff->root); /* Current root */
+      appendWithSpace(sendbuff, word);
 
-int2Ascii(word, pbuff->start); /* start value */
-appendWithSpace(sendbuff, word);
+      int2Ascii(word, pbuff->distance); /* Current Distance */ 
+      appendWithSpace(sendbuff, word);
+
+      int2Ascii(word, pbuff->length);  /* Append payload length */
+      appendWithSpace(sendbuff, word);
+      break;
+   case 2: break;
+   case 3: break;
+   case 4: break;
+   case 5: break;
+   
+   }
+
+
 
 /* 
  * We will transform the payload so that 
