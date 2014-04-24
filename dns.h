@@ -5,15 +5,12 @@
 #ifndef HOST_H_
 #define HOST_H_
 
-#include "databuff.h"
-
 #define NAME_LENGTH 100 
 
 typedef struct { /* State of host */
    int   physid;              /* physical id */
    int   netaddr;             /* host's network address */
-   int   rcvflag;
-   packetBuffer sendPacketBuff;  /* send packet buffer */
+   char namebuff[50];
    packetBuffer rcvPacketBuff;   
    managerLink manLink;       /* Connection to the manager */
    LinkInfo linkin;           /* Incoming communication link */

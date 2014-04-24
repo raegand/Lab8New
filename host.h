@@ -7,12 +7,15 @@
 
 #include "databuff.h"
 
-#define NAME_LENGTH 100 
+#define NAME_LENGTH 100
+#define DNS_LENGTH 50 
 
 typedef struct { /* State of host */
    int   physid;              /* physical id */
    char  maindir[NAME_LENGTH]; /* main directory name */
+   char  hostnamebuff[DNS_LENGTH]; /* buffer for storing dns name */
    int   maindirvalid;        /* indicates if the main directory is empty */
+   int   hostnamevalid;       /* indicates if the host name is valid */
    int   netaddr;             /* host's network address */
    int   nbraddr;             /* network address of neighbor */
    int   rcvflag;

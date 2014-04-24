@@ -8,6 +8,15 @@ void InitNTable(NameTable * table)
    table->size = 0;
 }
 
+int isNTableEmpty(NameTable * table)
+{
+   if(table->size == 0) {
+      return 1;
+   } else {
+      return 0;
+   }
+}
+
 int FindNTableIndex(NameTable * table, int addr)
 {
    int i = 0;

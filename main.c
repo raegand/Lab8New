@@ -15,6 +15,7 @@
 #include "net.h"
 #include "table.h"
 #include "queue.h"
+#include "dns.h"
 #include "switch.h"
 
 #define EMPTY_ADDR  0xffff  /* Indicates that the empty address */
@@ -32,6 +33,7 @@ hostState hstate;             /* The host's state */
 linkArrayType linkArray;
 manLinkArrayType manLinkArray;
 SwitchState s_state;
+dnsState d_state;
 
 pid_t pid;  /* Process id */
 int physid; /* Physical ID of host */
@@ -141,6 +143,28 @@ for (physid = 0; physid < num_hosts; physid++) {
 		free(s_state.link_out);
 		free(linkArray.link);
 	}  
+}
+
+/* Set up DNS */
+pid = fork();
+if(pid == -1) { printf("Error: fork() failed for DNS \n");
+   return;
+} else if (pid == 0) {
+   dnsInit(&d_state);
+
+   k = netHostOutlink(&linkArray, 100);
+   d_state.linkout = linkArray.link[k];
+
+   k = netHostOutlink(&linkArray, 100);
+   d_state.linkin = linkArray.link[k];
+  
+   netCloseHostOtherLinks(& linkArray, 100);
+   
+   dnsStateMain(&d_state);
+   free(manLinkArray.link);
+   free(s_state.link_in);
+   free(s_state.link_out);
+   free(linkArray.link);
 }
 
 for (physid = num_hosts; physid < num_hosts + num_switches; physid++) {

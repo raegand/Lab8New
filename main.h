@@ -12,6 +12,7 @@ typedef struct { /* Packet buffer */
    int root; /* current root data */
    int distance; 
    int valid;
+   int flag; /* flag for success or failure */
    /* for send buffer to indicate end */
    int start;
    int end;

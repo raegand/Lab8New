@@ -172,6 +172,7 @@ while(1) {
    printf("   (s) Set host's network address\n");
    printf("   (m) Set host's main directory\n");
    printf("   (f) Clear host's receive packet buffer\n");
+   printf("   (z) Register hostname to DNS\n");
    printf("   (r) Download host's receive packet buffer into a file\n");
    printf("   (u) Upload file into host's send packet buffer\n");
    printf("   (t) Transmit packet from the host's send packet buffer\n");
@@ -185,6 +186,7 @@ while(1) {
 
    /* Ensure that the command is valid */
    if (cmd == 'd') return cmd;
+   else if (cmd == 'z') return cmd;
    else if (cmd == 's') return cmd;
    else if (cmd == 'm') return cmd;
    else if (cmd == 'f') return cmd;
@@ -322,6 +324,24 @@ appendWithSpace(command, dirname);
 manCommandSend(manLink, command);
 }
 
+
+void manRegName(managerLink * manLink)
+{
+char hostname[50];
+char command[1000];
+
+/* Get the directory name */
+printf("Host name to register: ");
+scanf("%s", hostname);
+
+/* Create the command message */
+command[0] = '\0'; /* Initialize command to the empty string */
+appendWithSpace(command, "RegHostName");
+appendWithSpace(command, hostname);
+
+/* Send the command message */
+manCommandSend(manLink, command);
+}
 
 /* 
  * It tells the host to set its network address.  First, it
@@ -487,12 +507,16 @@ while(1) {
       k = manTransmitPacket(&(manLinkArray->link[currhost]));
       if (k==0) manWaitForReply(&(manLinkArray->link[currhost]), cmd);
    }
-   else if (cmd == 'h') 
+   else if (cmd == 'h') {
       manDisplayHosts(currhost, manLinkArray->numlinks);
-
-   else if (cmd == 'c') 
+   }
+   else if (cmd == 'c') {
       currhost = manChangeHost(manLinkArray->numlinks);
-
+   }
+   else if (cmd == 'z') {
+      manRegName(&(manLinkArray->link[currhost]));
+      manWaitForReply(&(manLinkArray->link[currhost]), cmd);
+   }
    else printf("***Invalid command, you entered %c\n", cmd);
 }
 printf("\n");

@@ -78,6 +78,7 @@ int  hostCommandReceive(managerLink * manLink, char command[]);
 
 void hostSetNetAddr(hostState * hstate, int netaddr, char replymsg[]);
 void hostSetMainDir(hostState * hstate, char filename[], char replymsg[]);
+void hostSetName(hostState * hstate, char hname[], char replymsg[]);
 void hostClearRcvFlg(hostState * hstate, char replymsg[]);
 void hostUploadPacket(hostState * hstate, char fname[], char replymsg[]); 
 void hostDownloadPacket(hostState * hstate, char fname[], char replymsg[]); 
@@ -227,6 +228,11 @@ while(1) {
          hostSetMainDir(hstate, word, replymsg);
          hostReplySend(&(hstate->manLink),"DISPLAY",replymsg);
       }
+      else if (strcmp(word, "RegHostName")==0) {
+         findWord(word, buffer, 2); /* Find directory name */
+         hostSetName(hstate, word, replymsg);
+         hostReplySend(&(hstate->manLink),"DISPLAY",replymsg);
+      }
       else if (strcmp(word, "ClearRcvFlg")==0) {
          hostClearRcvFlg(hstate, replymsg);
          hostReplySend(&(hstate->manLink),"DISPLAY",replymsg);
@@ -254,7 +260,6 @@ while(1) {
    if (hstate->sendBuffer.busy == 1) {
 	   hostTransmitPacket(hstate, replymsg);
    }
-
 
    /* Check if there is an incoming packet */
    length = linkReceive(&(hstate->linkin), &tmpbuff);
@@ -505,6 +510,23 @@ hstate->maindirvalid = 1;
 strcpy(replymsg, "Host's main directory name is changed");
 }
 
+
+void hostSetName(hostState * hstate, char hname[], char replymsg[])
+{
+   strcpy(hstate->hostnamebuff, hname);
+
+   /* Message to the manager */
+   strcpy(replymsg, "Attempting to register name on DNS");
+
+   /* Packet to DNS */
+   packetBuffer temp;
+   temp.type = DNSNAME; /* Should be 2 */
+   temp.srcaddr = hstate->physid;    
+   temp.dstaddr = 100;/* Address of DNS */
+   temp.length = strlen(hstate->hostnamebuff); 
+   linkSend(&(hstate->linkout), &temp);
+}
+
 /*
  * Get the host's state  
  * - host's physical ID
@@ -554,6 +576,7 @@ void hostInitState(hostState * hstate, int physid)
 {
 hstate->physid = physid;
 hstate->maindirvalid = 0; /* main directory name is empty*/
+hstate->hostnamevalid = 0; /* host name is initially invalid */
 hstate->netaddr = physid; /* default address */  
 hstate->nbraddr = EMPTY_ADDR;  
 hstate->rcvPacketBuff.valid = 0;

@@ -166,7 +166,10 @@ if (link->linkType==UNIPIPE) {
          pbuff->length = ascii2Int(word);
 
          break;
-      case 2: break;
+      case 2: 
+         findWord(word, buffer, 4); /* Length */
+         pbuff->length = ascii2Int(word);
+      break;
       case 3: break;
       case 4: break;
       case 5: break;
@@ -282,14 +285,15 @@ appendWithSpace(sendbuff, word);
       int2Ascii(word, pbuff->length);  /* Append payload length */
       appendWithSpace(sendbuff, word);
       break;
-   case 2: break;
+   case 2: 
+      int2Ascii(word, pbuff->length);  /* Append payload length */
+      appendWithSpace(sendbuff, word);
+   break;
    case 3: break;
    case 4: break;
    case 5: break;
    
    }
-
-
 
 /* 
  * We will transform the payload so that 
