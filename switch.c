@@ -70,9 +70,9 @@ void transmitRoot(SwitchState* s_state)
    temp.srcaddr = s_state->physId;
    temp.dstaddr = NEIGHBOR;
    temp.length = CHAR;
-   temp.valid = 1;
-   temp.start = 1;
-   temp.end = 1;
+   //temp.valid = 1;
+   //temp.start = 1;
+   //temp.end = 1;
    temp.distance = s_state->rootDist;
    temp.root = s_state->rootId; 
    transmitAll(s_state, &temp, NEIGHBOR);

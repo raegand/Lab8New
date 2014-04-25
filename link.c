@@ -252,7 +252,6 @@ appendWithSpace(sendbuff, word);
 int2Ascii(word, pbuff->type); /* Type of Data */
 appendWithSpace(sendbuff, word);
 
-
    /*
     * DATA = 0;
     * INFO = 1;

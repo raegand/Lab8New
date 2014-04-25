@@ -3,10 +3,10 @@
 
 #define DATA 0 
 #define INFO 1
-#define DNSNAME = 2;
-#define DNSACK = 3;
-#define DNSREQ = 4;
-#define DLREQ = 5;
+#define DNSNAME 2;
+#define DNSACK 3;
+#define DNSREQ 4;
+#define DLREQ 5;
 
 /* A collection of useful functions */
 
