@@ -510,7 +510,6 @@ hstate->maindirvalid = 1;
 strcpy(replymsg, "Host's main directory name is changed");
 }
 
-
 void hostSetName(hostState * hstate, char hname[], char replymsg[])
 {
 
@@ -523,7 +522,7 @@ void hostSetName(hostState * hstate, char hname[], char replymsg[])
    temp.type = 2; /* Should be 2 */
    temp.srcaddr = hstate->physid;    
    temp.dstaddr = 100;/* Address of DNS */
-   temp.length = strlen(hstate->hostnamebuff); 
+   temp.length = strlen(hname); 
    linkSend(&(hstate->linkout), &temp);
 }
 

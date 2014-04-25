@@ -13,7 +13,6 @@
 typedef struct { /* State of host */
    int   physid;              /* physical id */
    char  maindir[NAME_LENGTH]; /* main directory name */
-   char  hostnamebuff[DNS_LENGTH]; /* buffer for storing dns name */
    int   maindirvalid;        /* indicates if the main directory is empty */
    int   hostnamevalid;       /* indicates if the host name is valid */
    int   netaddr;             /* host's network address */

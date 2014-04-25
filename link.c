@@ -48,7 +48,6 @@
 
 #define PIPEREAD  0
 #define PIPEWRITE 1
-//#define PACKET_SIZE 420
 //#define PACKET_SIZE 414
 #define PACKET_SIZE 1000
 
@@ -125,7 +124,7 @@ if (link->linkType==UNIPIPE) {
     * DATA: DST,SRC,TYPE,LENGTH,END,START
     * INFO: DST,SRC,TYPE,ROOT, DIST, LENGTH
     * DNS NAME: DST, SRC, TYPE, LENGTH, NAME
-    * DNS ACK: DST, SRC, TYPE, LENGTH, FLAG
+    * DNS ACK: DST, SRC, TYPE, FLAG, LENGTH
     * DNS REQ: DST, SRC, TYPE, LENGTH, NAME
     * DL REQ: DST, SRC, TYPE, LENGTH, NAME
     *
@@ -166,13 +165,20 @@ if (link->linkType==UNIPIPE) {
          pbuff->length = ascii2Int(word);
 
          break;
+      case 3: 
+         findWord(word, buffer, 4);
+         pbuff->flag = ascii2Int(word); /* Current Distance  */
+
+         findWord(word, buffer, 5); /* Length */
+         pbuff->length = ascii2Int(word);
+         break;
+      case 4: /* Same as DNS PACKET, Length then Payload  */
+      case 5: /* Same as DNS PACKET, Length then Payload  */
       case 2: 
          findWord(word, buffer, 4); /* Length */
          pbuff->length = ascii2Int(word);
-      break;
-      case 3: break;
-      case 4: break;
-      case 5: break;
+         /* NAME is in PAYLOAD */
+         break;
       }
   
       /* 
@@ -246,22 +252,23 @@ appendWithSpace(sendbuff, word);
 int2Ascii(word, pbuff->type); /* Type of Data */
 appendWithSpace(sendbuff, word);
 
-/*
- * DATA = 0;
- * INFO = 1;
- * DNS NAME = 2;
- * DNS ACK = 3;
- * DNS REQ = 4;
- * DL REQ = 5;
- *
- * DATA: DST,SRC,TYPE,LENGTH,END,START
- * INFO: DST,SRC,TYPE,ROOT, DIST
- * DNS NAME: DST, SRC, TYPE, NAME
- * DNS ACK: DST, SRC, TYPE, FLAG
- * DNS REQ: DST, SRC, TYPE, NAME
- * DL REQ: DST, SRC, TYPE, NAME
- *
- */
+
+   /*
+    * DATA = 0;
+    * INFO = 1;
+    * DNS NAME = 2;
+    * DNS ACK = 3;
+    * DNS REQ = 4;
+    * DL REQ = 5;
+    *
+    * DATA: DST,SRC,TYPE,LENGTH,END,START
+    * INFO: DST,SRC,TYPE,ROOT, DIST, LENGTH
+    * DNS NAME: DST, SRC, TYPE, LENGTH, NAME
+    * DNS ACK: DST, SRC, TYPE, FLAG, LENGTH
+    * DNS REQ: DST, SRC, TYPE, LENGTH, NAME
+    * DL REQ: DST, SRC, TYPE, LENGTH, NAME
+    *
+    */
 
    switch(pbuff->type) {
    case 0:
@@ -284,14 +291,19 @@ appendWithSpace(sendbuff, word);
       int2Ascii(word, pbuff->length);  /* Append payload length */
       appendWithSpace(sendbuff, word);
       break;
+   case 3: break;
+      int2ascii(word, pbuff->flag);
+      appendWithSpace(sendbuff, word);
+      
+      int2Ascii(word, pbuff->length);  /* Append payload length */
+      appendWithSpace(sendbuff, word);
+
+   case 4: /* Same as DNS Packet; Length then PAYLOAD */
+   case 5: /* Same as DNS Packet; Length then PAYLOAD */
    case 2: 
       int2Ascii(word, pbuff->length);  /* Append payload length */
       appendWithSpace(sendbuff, word);
-   break;
-   case 3: break;
-   case 4: break;
-   case 5: break;
-   
+      break;
    }
 
 /* 
