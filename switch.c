@@ -154,7 +154,7 @@ void switchMain(SwitchState* s_state) {
          }
       }
       /* DEBUG PURPOSE ONLY */
-//      writeSwitchData(s_state);      
+      writeSwitchData(s_state);      
 		usleep(TEN_MILLI_SEC);
       timer++;
 	}

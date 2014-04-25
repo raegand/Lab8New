@@ -77,11 +77,16 @@ if (file != NULL) {
 	return;
 }
 
-if (num_hosts == -1 || num_links == -1 || num_switches == -1 ||
-	count != num_links/2 || num_links%2 != 0) {
+if (num_hosts == -1 || num_links == -1 || num_switches == -1)
+{
 	printf("invalid information in file\n");
 	return;
+} 
+
+/* OLD
+else if (count != num_links/2 || num_links%2 != 0) {
 }
+*/
 
 manLinkArray.link = (managerLink*)malloc(num_hosts*sizeof(managerLink));
 linkArray.link = (LinkInfo*)malloc(num_links*sizeof(LinkInfo));

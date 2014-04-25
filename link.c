@@ -327,7 +327,6 @@ for (k = 0; k < pbuff->length; k++) {
    newpayload[2*k] = highbits + 'a';
    newpayload[2*k+1] = lowbits + 'a'; 
 }
-
 newpayload[2*k] = '\0';
 
 appendWithSpace(sendbuff, newpayload);

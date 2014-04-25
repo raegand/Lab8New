@@ -275,8 +275,17 @@ while(1) {
            memset(hstate->rcvBuffer.data, 0, sizeof(hstate->rcvBuffer.data));
            hstate->rcvBuffer.length = 0;
            hstate->rcvflag = 0;
-	  }
-	  strcat(hstate->rcvBuffer.data, tmpbuff.payload);
+	  } else if(tmpbuff.dstaddr == hstate->netaddr && tmpbuff.valid == 1 && tmpbuff.type == 3)
+     {
+        if (tmpbuff.flag == 1) {
+         strcpy(replymsg, "Host name succesfully registered.");
+        } else {
+         strcpy(replymsg, "Host name failed to register.");
+        }
+		   hostReplySend(&(hstate->manLink), "DISPLAY",replymsg);
+     }
+	  
+     strcat(hstate->rcvBuffer.data, tmpbuff.payload);
 	  hstate->rcvBuffer.length += tmpbuff.length;
 	  hstate->rcvBuffer.srcaddr = tmpbuff.srcaddr;
 	  hstate->rcvBuffer.dstaddr = tmpbuff.dstaddr;
@@ -512,7 +521,6 @@ strcpy(replymsg, "Host's main directory name is changed");
 
 void hostSetName(hostState * hstate, char hname[], char replymsg[])
 {
-
    /* Message to the manager */
    strcpy(replymsg, "Attempting to register name on DNS");
 
