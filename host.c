@@ -41,6 +41,22 @@
 #define PIPEREAD  0
 #define TENMILLISEC 10000   /* 10 millisecond sleep */
 
+void writeHostData(hostState * hstate) 
+{
+   /* Writes switch data to file for debug purposes */
+   FILE * debug = fopen("DEBUG_HOST", "a");
+   fprintf(debug, "Host ID: %d ", hstate->physid);
+   int out, out2, in, in2;
+   out = (hstate->linkout).uniPipeInfo.physIdDst;
+   out2= (hstate->linkout).uniPipeInfo.physIdSrc;
+   in = (hstate->linkin).uniPipeInfo.physIdDst;
+   in2= (hstate->linkin).uniPipeInfo.physIdSrc;
+
+   fprintf(debug, "- OutDst/Src: %d,%d - ", out, out2);
+   fprintf(debug, "InDst/Src: %d %d\n", in, in2);
+   fclose(debug);
+}
+
 /* 
  * hostInit initializes the host.  It calls
  * - hostInitState which initializes the host's state.
@@ -294,6 +310,8 @@ while(1) {
 		  hstate->rcvBuffer.valid = 1;
 	  }
    }
+
+   writeHostData(hstate); 
 
    /* The host goes to sleep for 10 ms */
    usleep(TENMILLISEC);
