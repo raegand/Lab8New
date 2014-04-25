@@ -34,6 +34,15 @@ int isNumber(int x);
 int isLowerCaseLetter(int x);
 int isUpperCaseLetter(int x);
 
+void writeDNSData(dnsState * dstate) 
+{
+   /* Writes switch data to file for debug purposes */
+   FILE * debug = fopen("DEBUG_DNS", "a");
+   fprintf(debug, "Writing -- DNS ID: %d \n", dstate->physid);
+   fclose(debug); 
+   DNSDebugTable(&(dstate->n_table), dstate->physid);
+}
+
 void dnsMain(dnsState * dstate)
 {
    char buffer[1000]; /* The message from the manager */
@@ -46,7 +55,12 @@ void dnsMain(dnsState * dstate)
    while(1) {
       /* Check if there is an incoming packet */
       length = linkReceive(&(dstate->linkin), &tmpbuff);
-
+      if(length > 0) {
+         FILE * debug = fopen("DEBUG_DNS", "a");
+         fprintf(debug, "Packetbuffer is NOT EMPTY \n");
+         fprintf(debug, "Data: %s \n", tmpbuff.payload);
+         fclose(debug); 
+      }
       if (tmpbuff.dstaddr == dstate->netaddr && tmpbuff.valid == 1 && tmpbuff.type == 2) {
          /* Do stuff with NTABLE + CHECK VALIDTY THEN RESPOND*/
          if(checkName(tmpbuff.payload, tmpbuff.length) == 1) {
@@ -59,6 +73,7 @@ void dnsMain(dnsState * dstate)
      }
      
       /* The host goes to sleep for 10 ms */
+      writeDNSData(dstate); 
       usleep(TENMILLISEC);
    } /* End of while loop */
 }
@@ -68,7 +83,7 @@ void dnsTransmitSuccess(dnsState * dstate, int dstaddr)
    packetBuffer response;
    response.type = DNSACK;
    response.srcaddr = dstate->physid;
-   response.dstaddr = 
+   response.dstaddr = dstaddr;
    response.length = 1;
    response.flag = 1;
    linkSend(&(dstate->linkout), &response);
@@ -79,7 +94,7 @@ void dnsTransmitFailure(dnsState * dstate, int dstaddr)
    packetBuffer response;
    response.type = DNSACK;
    response.srcaddr = dstate->physid;
-   response.dstaddr = 
+   response.dstaddr = dstaddr;
    response.length = 1;
    response.flag = 0;
    linkSend(&(dstate->linkout), &response);

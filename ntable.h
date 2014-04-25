@@ -16,5 +16,5 @@ void InitNTable(NameTable * table);
 int FindNTableIndex(NameTable * table, int addr);
 void AddNTable(NameTable * table, int addr, char name[]);
 void UpdateNTableByAddress(NameTable * table, int addr, char name[]);
+void DNSDebugTable(NameTable * table, int id);
 void UpdateNTableByIndex(NameTable * table, int index, int addr, char name[]);
-

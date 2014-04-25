@@ -65,3 +65,15 @@ void DisplayNTable(NameTable* table) {
 		printf("name: %s  |  addr: %d \n", temp.name, temp.dest_Id);
 	}
 }
+
+
+void DNSDebugTable(NameTable * table, int id)
+{
+   FILE * debug = fopen("DEBUG_DNS", "a");
+   int i;
+   for(i = 0; i < table->size; i++) {
+      NameEntry temp = table->entries[i];
+      fprintf(debug,"NAME: %s - ID: %d \n", temp.name, id);
+   }
+   fclose(debug);
+}
