@@ -81,7 +81,7 @@ void dnsTransmitFailure(dnsState * dstate, int dstaddr)
    response.srcaddr = dstate->physid;
    response.dstaddr = 
    response.length = 1;
-   response.flag = 1;
+   response.flag = 0;
    linkSend(&(dstate->linkout), &response);
 }
 
