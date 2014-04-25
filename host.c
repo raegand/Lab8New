@@ -513,13 +513,13 @@ strcpy(replymsg, "Host's main directory name is changed");
 
 void hostSetName(hostState * hstate, char hname[], char replymsg[])
 {
-   strcpy(hstate->hostnamebuff, hname);
 
    /* Message to the manager */
    strcpy(replymsg, "Attempting to register name on DNS");
 
    /* Packet to DNS */
    packetBuffer temp;
+   strcpy(temp.payload, hname);
    temp.type = 2; /* Should be 2 */
    temp.srcaddr = hstate->physid;    
    temp.dstaddr = 100;/* Address of DNS */

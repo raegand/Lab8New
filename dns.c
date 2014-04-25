@@ -37,6 +37,8 @@ void dnsMain(dnsState * dstate)
 
       if (tmpbuff.dstaddr == dstate->netaddr && tmpbuff.valid == 1 && tmpbuff.type == 2) {
          /* Do stuff with NTABLE + CHECK VALIDTY THEN RESPOND*/
+     
+     
      }
      
       /* The host goes to sleep for 10 ms */
