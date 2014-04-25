@@ -97,6 +97,8 @@ void UpdateRoot(SwitchState* s_state, packetBuffer* pb)
    if(pb->distance < s_state->rootDist) {
       s_state->rootDist = pb->distance + 1;
       UpdateParentData(&(s_state->f_table), pb->srcaddr);
+   } else if (pb->distance == s_state->rootDist ) {
+      UpdateParentData(&(s_state->f_table), pb->srcaddr);
    } else {
       UpdateChildData(&(s_state->f_table), pb->srcaddr);
    }
