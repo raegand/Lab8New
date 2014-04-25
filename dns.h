@@ -1,10 +1,4 @@
-/* 
- * host.h 
- */
-
-#ifndef HOST_H_
-#define HOST_H_
-
+#include "ntable.h"
 #define NAME_LENGTH 100 
 
 typedef struct { /* State of host */
@@ -20,6 +14,4 @@ typedef struct { /* State of host */
 
 void dnsMain(dnsState* dnsstate);
 void dnsInit(dnsState * dnsstate, int physid);
-
-#endif
 

@@ -1,7 +1,6 @@
+#include <string.h>
+#include <stdio.h>
 #include "ntable.h"
-//#include <string.h>
-//#include <stdio.h>
-//#include <stdlib.h>
 
 void InitNTable(NameTable * table)
 {
@@ -59,27 +58,10 @@ void AddNTable(NameTable * table, int addr, char name[])
    }
 }
 
-void DisplayTable(NameTable* table) {
+void DisplayNTable(NameTable* table) {
 	int i = 0;
 	for (i; i < table->size; i++) {
 		NameEntry temp = table->entries[i];
 		printf("name: %s  |  addr: %d \n", temp.name, temp.dest_Id);
 	}
 }
-
-/*
-int main()
-{
-   NameTable mytable;
-   InitNTable(&mytable);
-   DisplayTable(&mytable);
-   AddNTable(&mytable, 17, "mrwhiskers");
-   AddNTable(&mytable, 17, "mrwhiskers2");
-   AddNTable(&mytable, 17, "mrwhiskers3");
-
-   AddNTable(&mytable, 13, "mrbiggie");
-   AddNTable(&mytable, 1, "choochoo");
-   AddNTable(&mytable, 8, "belieber");
-   DisplayTable(&mytable);
-
-}*/

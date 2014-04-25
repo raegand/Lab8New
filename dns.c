@@ -12,14 +12,12 @@
 #include "man.h"
 #include "host.h"
 #include "databuff.h"
-#include "ntable.h"
+#include "dns.h"
 
 #define TENMILLISEC 10000   /* 10 millisecond sleep */
 
 void dnsInitState(dnsState* dstate, int physid); 
 void dnsInitRcvPacketBuff(packetBuffer * packetbuff);
-void dnsInitSendPacketBuff(packetBuffer * packetbuff);
-int  dnsCommandReceive(managerLink * manLink, char command[]);
 void dnsTransmitPacket(dnsState * dstate, char replymsg[]);
 void dnsInitTransmit(dnsState * dstate, char word[], char replymsg[]);
 
@@ -48,17 +46,9 @@ void dnsMain(dnsState * dstate)
 
 void dnsInit(dnsState* dstate, int physid)
 {
-   dnsInitState(dstate, physid);     /* Initialize host's state */
-   /* Initialize the receive and send packet buffers */
+   dnsInitState(dstate, physid);    
    dnsInitRcvPacketBuff(&(dstate->rcvPacketBuff));  
-   dnsInitSendPacketBuff(&(dstate->rcvPacketBuff)); 
-   InitNTable(&(dstate->n_table);
-}
-void dnsInitSendPacketBuff(packetBuffer * packetbuff)
-{
-   packetbuff->valid = 0;
-   packetbuff->end = 0;
-   packetbuff->start = 0;
+   InitNTable(&(dstate->n_table));
 }
 
 void dnsInitRcvPacketBuff(packetBuffer * packetbuff)
@@ -73,7 +63,5 @@ void dnsInitState(dnsState * dnsstate, int physid)
    dnsstate->physid = physid;
    dnsstate->netaddr = physid; /* default address */  
    dnsstate->rcvPacketBuff.valid = 0;
-   dnsInitDataBuffer(&(dstate->sendBuffer));
-   dnsInitDataBuffer(&(dstate->rcvBuffer));
 }
 

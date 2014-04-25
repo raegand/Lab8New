@@ -12,10 +12,10 @@
 #include "link.h"
 #include "man.h"
 #include "host.h"
+#include "dns.h"
 #include "net.h"
 #include "table.h"
 #include "queue.h"
-#include "dns.h"
 #include "switch.h"
 
 #define EMPTY_ADDR  0xffff  /* Indicates that the empty address */
@@ -150,17 +150,17 @@ pid = fork();
 if(pid == -1) { printf("Error: fork() failed for DNS \n");
    return;
 } else if (pid == 0) {
-   dnsInit(&d_state);
+   dnsInit(&d_state, 100);
 
-   k = netHostOutlink(&linkArray, 100);
+   k = netHostOutLink(&linkArray, 100);
    d_state.linkout = linkArray.link[k];
 
-   k = netHostOutlink(&linkArray, 100);
+   k = netHostInLink(&linkArray, 100);
    d_state.linkin = linkArray.link[k];
   
    netCloseHostOtherLinks(& linkArray, 100);
    
-   dnsStateMain(&d_state);
+   dnsMain(&d_state);
    free(manLinkArray.link);
    free(s_state.link_in);
    free(s_state.link_out);

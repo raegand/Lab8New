@@ -520,7 +520,7 @@ void hostSetName(hostState * hstate, char hname[], char replymsg[])
 
    /* Packet to DNS */
    packetBuffer temp;
-   temp.type = DNSNAME; /* Should be 2 */
+   temp.type = 2; /* Should be 2 */
    temp.srcaddr = hstate->physid;    
    temp.dstaddr = 100;/* Address of DNS */
    temp.length = strlen(hstate->hostnamebuff); 
