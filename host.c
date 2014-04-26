@@ -127,7 +127,6 @@ void hostInitTransmit(hostState * hstate, char word[], char replymsg[]);
  */
 void hostTransmitPacket(hostState * hstate, char replymsg[])
 {
-
 	int i = 0;
 	int length = hstate->sendBuffer.length - hstate->sendBuffer.pos;
 	int error = 0;
@@ -541,11 +540,11 @@ void hostSetName(hostState * hstate, char hname[], char replymsg[])
 {
    /* Message to the manager */
    strcpy(replymsg, "Attempting to register name on DNS");
-
    /* Packet to DNS */
    packetBuffer temp;
    strcpy(temp.payload, hname);
    temp.type = 2; /* Should be 2 */
+   temp.valid = 1;
    temp.srcaddr = hstate->physid;    
    temp.dstaddr = 100;/* Address of DNS */
    temp.length = strlen(hname); 

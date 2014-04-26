@@ -2,6 +2,7 @@
 #include "table.h"
 #define PARENT 1
 #define CHILD 0
+#define BAD -1
 
 void InitTable(Table* table) {
 	table->size = 0;
@@ -67,16 +68,16 @@ void UpdateTableByIndex(Table* table, int index, int valid, int new_out_link) {
 	table->entries[index].valid = valid;
 }
 
-int IsChild(Table * table, int dst_addr)
+int IsBad(Table * table, int dst_addr)
 {
    int index = FindTableIndex(table, dst_addr);
    if (index == ERROR) {
-      return 1; /* If entry is missing, it is likely a host, thus CHILD */
+      return 0; /* If entry is missing, it is likely a host, thus CHILD */
    }
-   if(table->entries[index].parent == CHILD) {
-      return 1;
+   if(table->entries[index].parent != BAD) {
+      return 0;
    } else {
-      return -1;
+      return 1;
    }
 
 }
@@ -88,6 +89,16 @@ void UpdateParentData(Table * table, int dst_addr)
       return;
    }
    table->entries[index].parent = PARENT;
+}
+
+
+void UpdateBad(Table * table, int dst_addr)
+{
+   int index = FindTableIndex(table, dst_addr);
+   if (index == ERROR) {
+      return;
+   }
+   table->entries[index].parent = BAD;
 }
 
 void UpdateChildData(Table * table, int dst_addr)
@@ -105,8 +116,16 @@ void SwitchDebugTable(Table * table, int id)
    int i;
    for(i = 0; i < table->size; i++) {
       TableEntry temp = table->entries[i];
+      
+      /* 
+		fprintf(debug,"valid: %d  |  dst_addr: %d  |  out_link: %d\n",
+				temp.valid, temp.dst_addr, temp.out_link_id);
+      */
+
       if(temp.parent == PARENT) {
          fprintf(debug,"SwitchID: %d - Parent: %d \n", id, temp.dst_addr);
+      } else if(temp.parent == BAD) {
+         fprintf(debug,"SwitchID: %d - Bad: %d \n", id, temp.dst_addr);
       } else {
          fprintf(debug,"SwitchID: %d - Child: %d \n", id, temp.dst_addr);
       }

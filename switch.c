@@ -23,8 +23,9 @@ void writeSwitchData(SwitchState * s_state)
    /* Writes switch data to file for debug purposes */
    FILE * debug = fopen("DEBUG_SWITCH", "a");
    fprintf(debug, "Switch ID: %d ", s_state->physId);
-   fprintf(debug, "- Root: %d - ", s_state->rootId);
-   fprintf(debug, "Dist: %d \n", s_state->rootDist);
+   fprintf(debug, "| Root: %d | ", s_state->rootId);
+   fprintf(debug, "Dist: %d | ", s_state->rootDist);
+   fprintf(debug, "ParentId: %d \n", s_state->parentId);
    fclose(debug); 
    SwitchDebugTable(&(s_state->f_table), s_state->physId);
 }
@@ -34,6 +35,7 @@ void switchInit(SwitchState* s_state, int physid) {
 	s_state->out_size = 0;
 	s_state->physId = physid;
    s_state->rootId = physid; /* initially rootid is physid */
+   s_state->parentId = physid; /* initially own parent */
    s_state->rootDist = INF; /* initially infinite distance from root */
 	InitQueue(&(s_state->packet_q));
 	InitTable(&(s_state->f_table));
@@ -41,22 +43,29 @@ void switchInit(SwitchState* s_state, int physid) {
 
 void transmitAll(SwitchState* s_state, packetBuffer* pb, int in)
 {
+   /* this function is specialized for INFO packets */
    int i;
    for(i = 0; i < s_state->out_size; i++) {
       if(i!= in) {
+         int x = s_state->link_out[i].uniPipeInfo.physIdDst;
+         if(x == s_state->parentId) {
+            pb->parent = 1;
+         } else {
+            pb->parent = 0;
+         }
          linkSend(&(s_state->link_out[i]), pb);
       }
    }
 }
 
-void transmitChildren(SwitchState* s_state, packetBuffer* pb, int in)
+void transmitGoodLink(SwitchState* s_state, packetBuffer* pb, int in)
 {
    int i;
    for(i = 0; i < s_state->out_size; i++) {
       if(i!= in) {
-         int x = IsChild(&(s_state->f_table), 
+         int bad = IsBad(&(s_state->f_table), 
          s_state->link_out[i].uniPipeInfo.physIdDst);
-         if(x == ISCHILD) {
+         if(x == 0) {
             linkSend(&(s_state->link_out[i]), pb);
          }
       }
@@ -70,9 +79,7 @@ void transmitRoot(SwitchState* s_state)
    temp.srcaddr = s_state->physId;
    temp.dstaddr = NEIGHBOR;
    temp.length = CHAR;
-   //temp.valid = 1;
-   //temp.start = 1;
-   //temp.end = 1;
+   temp.valid = 1;
    temp.distance = s_state->rootDist;
    temp.root = s_state->rootId; 
    transmitAll(s_state, &temp, NEIGHBOR);
@@ -90,17 +97,29 @@ void UpdateRoot(SwitchState* s_state, packetBuffer* pb)
    /* If neighbors rootid is ME, I am root, therefor dist = 0 */
    if(pb->root == s_state->physId) {
       s_state->rootDist = 0;
+      UpdateChildData(&(s_state->f_table), pb->srcaddr);
+   }
+
+   /* FIX */
+   if(s_state->rootDist == 0 && s_state->physId != s_state->rootId) {
+      s_state->rootDist = INF;
+   }
+
+   /* Packet came from child */
+   if(pb->parent == 1) {
+      UpdateChildData(&(s_state->f_table), pb->srcaddr);
+   } else if (pb->parent == 0 && pb->distance >= s_state->rootDist) {
+      UpdateBad(&(s_state->f_table), pb->srcaddr);
    }
 
    /* If my neighbors distance to root is smaller than mine,
     * my distance is neighbors + 1 */
    if(pb->distance < s_state->rootDist) {
       s_state->rootDist = pb->distance + 1;
+      s_state->parentId = pb->srcaddr;
       UpdateParentData(&(s_state->f_table), pb->srcaddr);
    } else if (pb->distance == s_state->rootDist ) {
-      UpdateParentData(&(s_state->f_table), pb->srcaddr);
-   } else {
-      UpdateChildData(&(s_state->f_table), pb->srcaddr);
+      UpdateBad(&(s_state->f_table), pb->srcaddr);
    }
 }
 
@@ -139,13 +158,14 @@ void switchMain(SwitchState* s_state) {
 				out_link = GetOutLink(&(s_state->f_table), tmpbuff.dstaddr);
 				/* if inside table */
 				if (out_link != ERROR) {
-					linkSend(&(s_state->link_out[out_link]), &tmpbuff);
+					printf("%d \n", out_link);
+               linkSend(&(s_state->link_out[out_link]), &tmpbuff);
 				} else {
-					/* we know we that we have the srcaddr link b/c we input it
+               /* we know we that we have the srcaddr link b/c we input it
 					 * when we receive a packet */
 					in_link = GetOutLink(&(s_state->f_table), tmpbuff.srcaddr);
 					/* else send it to all but incoming link */
-               transmitChildren(s_state, &tmpbuff, in_link);
+               transmitGoodLink(s_state, &tmpbuff, in_link);
 				}
 			}
       } else {

@@ -161,8 +161,14 @@ if (link->linkType==UNIPIPE) {
          findWord(word, buffer, 5);
          pbuff->distance = ascii2Int(word); /* Current Distance  */
 
-         findWord(word, buffer, 6); /* Length */
+         findWord(word, buffer, 6); /* Parent Flag */
+         pbuff->parent = ascii2Int(word);
+
+         findWord(word, buffer, 7); /* Length */
          pbuff->length = ascii2Int(word);
+
+         //printf("Src: %d | Dest: %d \n", pbuff->srcaddr, pbuff->dstaddr);
+         //printf("Dist: %d | Root: %d \n",pbuff->distance, pbuff->root);
 
          break;
       case 3: 
@@ -177,6 +183,11 @@ if (link->linkType==UNIPIPE) {
       case 2: 
          findWord(word, buffer, 4); /* Length */
          pbuff->length = ascii2Int(word);
+
+         int out = link->uniPipeInfo.physIdDst;
+         int in = link->uniPipeInfo.physIdSrc;
+         printf("Sending out data to '%d' \n", out);
+         printf("Came From '%d' \n", in);
          /* NAME is in PAYLOAD */
          break;
       }
@@ -287,6 +298,9 @@ appendWithSpace(sendbuff, word);
       int2Ascii(word, pbuff->distance); /* Current Distance */ 
       appendWithSpace(sendbuff, word);
 
+      int2Ascii(word, pbuff->parent); /* Parent Flag */
+      appendWithSpace(sendbuff, word);
+      
       int2Ascii(word, pbuff->length);  /* Append payload length */
       appendWithSpace(sendbuff, word);
       break;
