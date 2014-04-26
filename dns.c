@@ -34,12 +34,6 @@ int isNumber(int x);
 int isLowerCaseLetter(int x);
 int isUpperCaseLetter(int x);
 
-void writeDNSData(dnsState * dstate) 
-{
-   /* Writes switch data to file for debug purposes */
-   DNSDebugTable(&(dstate->n_table), dstate->physid);
-}
-
 void dnsMain(dnsState * dstate)
 {
    char buffer[1000]; /* The message from the manager */
@@ -57,49 +51,49 @@ void dnsMain(dnsState * dstate)
          FILE * debug = fopen("DEBUG_DNS", "a");
          fprintf(debug, "Received DNS Packet! \n");
          fprintf(debug, "Data: %s \n", tmpbuff.payload);
-         
+          
          /* Do stuff with NTABLE + CHECK VALIDTY THEN RESPOND*/
          if(checkName(tmpbuff.payload, tmpbuff.length) == 1) {
             /* Passed name check, add to Ntable */
-            UpdateNTableByAddress(&(dstate->n_table), tmpbuff.srcaddr, tmpbuff.payload);
-            fprintf(debug, "Data passed test!\n");
+            AddNTable(&(dstate->n_table), tmpbuff.srcaddr, tmpbuff.payload);
+
             dnsTransmitSuccess(dstate, tmpbuff.srcaddr);  
+            fprintf(debug, "Data passed test!\n");
          } else {
             dnsTransmitFailure( dstate, tmpbuff.srcaddr);
             fprintf(debug, "Data didn't pass test...\n");
          }
-     
-         fclose(debug); 
+          
+          fclose(debug); 
      }
-     
       /* The host goes to sleep for 10 ms */
-      writeDNSData(dstate); 
       usleep(TENMILLISEC);
+      DNSDebugTable(&(dstate->n_table));
    } /* End of while loop */
 }
 
 void dnsTransmitSuccess(dnsState * dstate, int dstaddr)
 {
-   packetBuffer response;
-   response.type = DNSACK;
-   response.srcaddr = dstate->physid;
-   response.dstaddr = dstaddr;
-   response.length = 1;
-   response.flag = 1;
-   response.valid = 1;
-   linkSend(&(dstate->linkout), &response);
+   packetBuffer tmp;
+   tmp.type = DNSACK;
+   tmp.srcaddr = dstate->physid;
+   tmp.dstaddr = dstaddr;
+   tmp.length = 1;
+   tmp.flag = 1;
+   tmp.valid = 1;
+   linkSend(&(dstate->linkout), &tmp);
 }
 
 void dnsTransmitFailure(dnsState * dstate, int dstaddr)
 {
-   packetBuffer response;
-   response.type = DNSACK;
-   response.srcaddr = dstate->physid;
-   response.dstaddr = dstaddr;
-   response.length = 1;
-   response.flag = 0;
-   response.valid = 1;
-   linkSend(&(dstate->linkout), &response);
+   packetBuffer tmp;
+   tmp.type = DNSACK;
+   tmp.srcaddr = dstate->physid;
+   tmp.dstaddr = dstaddr;
+   tmp.length = 1;
+   tmp.flag = 0;
+   tmp.valid = 1;
+   linkSend(&(dstate->linkout), &tmp);
 }
 
 int checkName(char hname[], int length) 

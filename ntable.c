@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "ntable.h"
 
+void DNSDebugTable(NameTable * table);
 void InitNTable(NameTable * table)
 {
    table->size = 0;
@@ -67,13 +68,13 @@ void DisplayNTable(NameTable* table) {
 }
 
 
-void DNSDebugTable(NameTable * table, int id)
+void DNSDebugTable(NameTable * table)
 {
-   FILE * debug = fopen("DEBUG_DNS", "a");
+   FILE * debug = fopen("DEBUG_DNS_TABLE", "a");
    int i;
    for(i = 0; i < table->size; i++) {
       NameEntry temp = table->entries[i];
-      fprintf(debug,"NAME: %s - ID: %d \n", temp.name, id);
+      fprintf(debug,"NAME: %s - ID: %d \n", temp.name, temp.dest_Id);
    }
    fclose(debug);
 }

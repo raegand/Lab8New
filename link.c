@@ -169,13 +169,10 @@ if (link->linkType==UNIPIPE) {
          findWord(word, buffer, 7); /* Length */
          pbuff->length = ascii2Int(word);
 
-       //  printf("Src: %d | Dest: %d \n", pbuff->srcaddr, pbuff->dstaddr);
-       //  printf("Dist: %d | Root: %d \n",pbuff->distance, pbuff->root);
-
          break;
       case 3: 
          findWord(word, buffer, 4);
-         pbuff->flag = ascii2Int(word); /* Current Distance  */
+         pbuff->flag = ascii2Int(word); /* Flag  */
 
          findWord(word, buffer, 5); /* Length */
          pbuff->length = ascii2Int(word);
@@ -234,9 +231,10 @@ int  k;
 char lowbits;
 char highbits;
 
+/*
 if(pbuff->type == 3) {
-   printf("length: %d \n", pbuff->length);
-}
+   pbuff->length = 1;
+}*/
 
 /* Check if this send should be aborted */
 if (pbuff->valid == 0) {
@@ -307,13 +305,13 @@ appendWithSpace(sendbuff, word);
       int2Ascii(word, pbuff->length);  /* Append payload length */
       appendWithSpace(sendbuff, word);
       break;
-   case 3: break;
-      int2ascii(word, pbuff->flag);
+   case 3:
+      int2Ascii(word, pbuff->flag);
       appendWithSpace(sendbuff, word);
       
       int2Ascii(word, pbuff->length);  /* Append payload length */
       appendWithSpace(sendbuff, word);
-
+      break;
    case 4: /* Same as DNS Packet; Length then PAYLOAD */
    case 5: /* Same as DNS Packet; Length then PAYLOAD */
    case 2: 
