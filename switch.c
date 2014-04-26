@@ -41,20 +41,18 @@ void switchInit(SwitchState* s_state, int physid) {
 	InitTable(&(s_state->f_table));
 }
 
-void transmitAll(SwitchState* s_state, packetBuffer* pb, int in)
+void transmitAll(SwitchState* s_state, packetBuffer* pb)
 {
    /* this function is specialized for INFO packets */
    int i;
    for(i = 0; i < s_state->out_size; i++) {
-      if(i!= in) {
-         int x = s_state->link_out[i].uniPipeInfo.physIdDst;
-         if(x == s_state->parentId) {
-            pb->parent = 1;
-         } else {
-            pb->parent = 0;
-         }
-         linkSend(&(s_state->link_out[i]), pb);
+      int x = s_state->link_out[i].uniPipeInfo.physIdDst;
+      if(x == s_state->parentId) {
+         pb->parent = 1;
+      } else {
+         pb->parent = 0;
       }
+      linkSend(&(s_state->link_out[i]), pb);
    }
 }
 
@@ -65,7 +63,7 @@ void transmitGoodLink(SwitchState* s_state, packetBuffer* pb, int in)
       if(i!= in) {
          int bad = IsBad(&(s_state->f_table), 
          s_state->link_out[i].uniPipeInfo.physIdDst);
-         if(x == 0) {
+         if(bad == 0) {
             linkSend(&(s_state->link_out[i]), pb);
          }
       }
@@ -82,45 +80,64 @@ void transmitRoot(SwitchState* s_state)
    temp.valid = 1;
    temp.distance = s_state->rootDist;
    temp.root = s_state->rootId; 
-   transmitAll(s_state, &temp, NEIGHBOR);
+   transmitAll(s_state, &temp);
 }
 
 void UpdateRoot(SwitchState* s_state, packetBuffer* pb) 
 {
-   /* If neighbors root is smaller than mine, switch root */
-   if(pb->root < s_state->rootId) {
-     s_state->rootId = pb->root;
-     s_state->rootDist = INF; /* Reset Distance */
-     return;
+   /*
+    * ---------------------- PACKET DATA: ----------------------
+    * Root Id | pb->root
+    * Distance | pb->Dist
+    * Parent Flag | pb->parent (if == 1, then it was sent by child)
+    * ----------------------------------------------------------
+    */
+
+   /* Behavioral fixes*/
+   if(s_state->rootDist == 0 && s_state->physId != s_state->rootId) {
+      s_state->rootDist = INF;
    }
 
    /* If neighbors rootid is ME, I am root, therefor dist = 0 */
    if(pb->root == s_state->physId) {
       s_state->rootDist = 0;
       UpdateChildData(&(s_state->f_table), pb->srcaddr);
+      return;
+   }
+  
+   /* If root in packet is smaller than me, update my own root */ 
+   if(pb->root < s_state->rootId) {
+      s_state->rootId = pb->root;
+      s_state->rootDist = INF; // Don't know distance yet
+      return;
    }
 
-   /* FIX */
-   if(s_state->rootDist == 0 && s_state->physId != s_state->rootId) {
-      s_state->rootDist = INF;
-   }
-
-   /* Packet came from child */
-   if(pb->parent == 1) {
-      UpdateChildData(&(s_state->f_table), pb->srcaddr);
-   } else if (pb->parent == 0 && pb->distance >= s_state->rootDist) {
-      UpdateBad(&(s_state->f_table), pb->srcaddr);
-   }
-
-   /* If my neighbors distance to root is smaller than mine,
-    * my distance is neighbors + 1 */
+   /* If neighbor doesn't have same root as me, then ignore/exit */
+   if(pb->root != s_state->rootId) return;
+   
    if(pb->distance < s_state->rootDist) {
+      /* Changing parent won't matter if this case */
+      if(s_state->rootDist == pb->distance + 1) {
+         if(pb->srcaddr != s_state->parentId) {
+            UpdateBad(&(s_state->f_table), pb->srcaddr);
+         }
+         return;
+      }
+      /* Update Distance */
       s_state->rootDist = pb->distance + 1;
       s_state->parentId = pb->srcaddr;
       UpdateParentData(&(s_state->f_table), pb->srcaddr);
-   } else if (pb->distance == s_state->rootDist ) {
+   } else if (pb->distance == s_state->rootDist) {
       UpdateBad(&(s_state->f_table), pb->srcaddr);
+   } else if(pb->distance > s_state->rootDist) {
+      if(pb->parent == 0) {
+         UpdateBad(&(s_state->f_table), pb->srcaddr);
+      } else {
+         UpdateChildData(&(s_state->f_table), pb->srcaddr);
+      }
    }
+
+
 }
 
 void switchMain(SwitchState* s_state) {

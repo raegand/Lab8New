@@ -122,13 +122,13 @@ void SwitchDebugTable(Table * table, int id)
 				temp.valid, temp.dst_addr, temp.out_link_id);
       */
 
-      if(temp.parent == PARENT) {
-         fprintf(debug,"SwitchID: %d - Parent: %d \n", id, temp.dst_addr);
-      } else if(temp.parent == BAD) {
+//     if(temp.parent == PARENT) {
+//        fprintf(debug,"SwitchID: %d - Parent: %d \n", id, temp.dst_addr);
+      if(temp.parent == BAD) {
          fprintf(debug,"SwitchID: %d - Bad: %d \n", id, temp.dst_addr);
-      } else {
-         fprintf(debug,"SwitchID: %d - Child: %d \n", id, temp.dst_addr);
-      }
+     } 
+//        fprintf(debug,"SwitchID: %d - Child: %d \n", id, temp.dst_addr);
+//      }
    }
    fclose(debug);
 }

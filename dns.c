@@ -37,9 +37,6 @@ int isUpperCaseLetter(int x);
 void writeDNSData(dnsState * dstate) 
 {
    /* Writes switch data to file for debug purposes */
-   FILE * debug = fopen("DEBUG_DNS", "a");
-   fprintf(debug, "Writing -- DNS ID: %d \n", dstate->physid);
-   fclose(debug); 
    DNSDebugTable(&(dstate->n_table), dstate->physid);
 }
 
@@ -55,9 +52,9 @@ void dnsMain(dnsState * dstate)
    while(1) {
       /* Check if there is an incoming packet */
       length = linkReceive(&(dstate->linkin), &tmpbuff);
-      if(length > 0) {
+      if(tmpbuff.type == 2) {
          FILE * debug = fopen("DEBUG_DNS", "a");
-         fprintf(debug, "Packetbuffer is NOT EMPTY \n");
+         fprintf(debug, "Received DNS Packet! \n");
          fprintf(debug, "Data: %s \n", tmpbuff.payload);
          fclose(debug); 
       }

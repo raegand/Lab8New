@@ -141,6 +141,8 @@ if (link->linkType==UNIPIPE) {
       findWord(word, buffer, 3); /* Packet Type */
       pbuff->type = ascii2Int(word);      
 
+      int out, in;
+
       switch(pbuff->type) {
       case 0:
          findWord(word, buffer, 4); /* Length */
@@ -164,11 +166,28 @@ if (link->linkType==UNIPIPE) {
          findWord(word, buffer, 6); /* Parent Flag */
          pbuff->parent = ascii2Int(word);
 
+
+         out = link->uniPipeInfo.physIdDst;
+         in = link->uniPipeInfo.physIdSrc;
+         
+         FILE * dbg = fopen("DEBUG_SWITCH", "a");
+
+         fprintf(dbg, "\n");
+         fprintf(dbg, "Sending out data to '%d' \n", out);
+         fprintf(dbg, "Came From '%d' \n", in);
+         fprintf(dbg, "Parent Flag: %d \n", pbuff->parent );
+         fprintf(dbg, "Distance : %d \n", pbuff->distance );
+         fprintf(dbg, "\n");
+
+         fclose(dbg);
+
+         
+         
          findWord(word, buffer, 7); /* Length */
          pbuff->length = ascii2Int(word);
 
-         //printf("Src: %d | Dest: %d \n", pbuff->srcaddr, pbuff->dstaddr);
-         //printf("Dist: %d | Root: %d \n",pbuff->distance, pbuff->root);
+       //  printf("Src: %d | Dest: %d \n", pbuff->srcaddr, pbuff->dstaddr);
+       //  printf("Dist: %d | Root: %d \n",pbuff->distance, pbuff->root);
 
          break;
       case 3: 
@@ -184,8 +203,8 @@ if (link->linkType==UNIPIPE) {
          findWord(word, buffer, 4); /* Length */
          pbuff->length = ascii2Int(word);
 
-         int out = link->uniPipeInfo.physIdDst;
-         int in = link->uniPipeInfo.physIdSrc;
+         out = link->uniPipeInfo.physIdDst;
+         in  = link->uniPipeInfo.physIdSrc;
          printf("Sending out data to '%d' \n", out);
          printf("Came From '%d' \n", in);
          /* NAME is in PAYLOAD */

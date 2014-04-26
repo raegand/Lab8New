@@ -229,6 +229,21 @@ free(manLinkArray.link);
  * The following system call will kill all the children processes, so
  * that saves us some manual labor
  */
+
+   FILE * debug1 = fopen("DEBUG_DNS", "a");
+   fprintf(debug1, "----DATA PAST THIS POINT IS INVALID \n");
+
+   FILE * debug2 = fopen("DEBUG_SWITCH", "a");
+   fprintf(debug2, "----DATA PAST THIS POINT IS INVALID \n");
+   
+   FILE * debug3 = fopen("DEBUG_HOST", "a");
+   fprintf(debug3, "----DATA PAST THIS POINT IS INVALID \n");
+   
+   fclose(debug1);
+   fclose(debug2);
+   fclose(debug3);
+
+
 kill(0, SIGKILL); /* Kill all processes */
 }
 
