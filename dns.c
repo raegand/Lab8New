@@ -83,6 +83,7 @@ void dnsTransmitSuccess(dnsState * dstate, int dstaddr)
    response.dstaddr = dstaddr;
    response.length = 1;
    response.flag = 1;
+   response.valid = 1;
    linkSend(&(dstate->linkout), &response);
 }
 
@@ -94,6 +95,7 @@ void dnsTransmitFailure(dnsState * dstate, int dstaddr)
    response.dstaddr = dstaddr;
    response.length = 1;
    response.flag = 0;
+   response.valid = 1;
    linkSend(&(dstate->linkout), &response);
 }
 

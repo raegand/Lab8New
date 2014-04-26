@@ -141,7 +141,7 @@ if (link->linkType==UNIPIPE) {
       findWord(word, buffer, 3); /* Packet Type */
       pbuff->type = ascii2Int(word);      
 
-      int out, in;
+      int in;
 
       switch(pbuff->type) {
       case 0:
@@ -186,11 +186,7 @@ if (link->linkType==UNIPIPE) {
          findWord(word, buffer, 4); /* Length */
          pbuff->length = ascii2Int(word);
 
-         out = link->uniPipeInfo.physIdDst;
-         in  = link->uniPipeInfo.physIdSrc;
-         printf("Sending out data to '%d' \n", out);
-         printf("Came From '%d' \n", in);
-         printf("Data: %s \n,", pbuff->payload);
+         findWord(word, buffer, 5); /* Payload */
          /* NAME is in PAYLOAD */
          break;
       }
@@ -320,8 +316,10 @@ appendWithSpace(sendbuff, word);
       int2Ascii(word, pbuff->length);  /* Append payload length */
       appendWithSpace(sendbuff, word);
 
+/*
       printf("Length of payload is: %d \n", pbuff->length);
       printf("Payload is: %s \n", pbuff->payload);
+*/
 
       break;
    }

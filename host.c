@@ -549,7 +549,8 @@ void hostSetName(hostState * hstate, char hname[], char replymsg[])
    temp.valid = 1;
    temp.srcaddr = hstate->physid;    
    temp.dstaddr = 100;/* Address of DNS */
-   temp.length = strlen(hname) + 1; 
+   temp.length = strlen(hname);
+   temp.payload[temp.length] = '\0'; 
    linkSend(&(hstate->linkout), &temp);
 }
 
