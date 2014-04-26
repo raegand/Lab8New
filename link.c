@@ -165,23 +165,6 @@ if (link->linkType==UNIPIPE) {
 
          findWord(word, buffer, 6); /* Parent Flag */
          pbuff->parent = ascii2Int(word);
-
-
-         out = link->uniPipeInfo.physIdDst;
-         in = link->uniPipeInfo.physIdSrc;
-         
-         FILE * dbg = fopen("DEBUG_SWITCH", "a");
-
-         fprintf(dbg, "\n");
-         fprintf(dbg, "Sending out data to '%d' \n", out);
-         fprintf(dbg, "Came From '%d' \n", in);
-         fprintf(dbg, "Parent Flag: %d \n", pbuff->parent );
-         fprintf(dbg, "Distance : %d \n", pbuff->distance );
-         fprintf(dbg, "\n");
-
-         fclose(dbg);
-
-         
          
          findWord(word, buffer, 7); /* Length */
          pbuff->length = ascii2Int(word);
@@ -207,6 +190,7 @@ if (link->linkType==UNIPIPE) {
          in  = link->uniPipeInfo.physIdSrc;
          printf("Sending out data to '%d' \n", out);
          printf("Came From '%d' \n", in);
+         printf("Data: %s \n,", pbuff->payload);
          /* NAME is in PAYLOAD */
          break;
       }
@@ -335,6 +319,10 @@ appendWithSpace(sendbuff, word);
    case 2: 
       int2Ascii(word, pbuff->length);  /* Append payload length */
       appendWithSpace(sendbuff, word);
+
+      printf("Length of payload is: %d \n", pbuff->length);
+      printf("Payload is: %s \n", pbuff->payload);
+
       break;
    }
 
@@ -350,6 +338,7 @@ appendWithSpace(sendbuff, word);
  * the first byte is the high order bits
  * and the second byte is the low order bits.
  */
+
 
 for (k = 0; k < pbuff->length; k++) {
    lowbits = pbuff->payload[k];

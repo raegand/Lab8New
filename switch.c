@@ -114,6 +114,10 @@ void UpdateRoot(SwitchState* s_state, packetBuffer* pb)
 
    /* If neighbor doesn't have same root as me, then ignore/exit */
    if(pb->root != s_state->rootId) return;
+  
+   if(pb->srcaddr == s_state->rootId) {
+      s_state->parentId = pb->srcaddr;
+   }
    
    if(pb->distance < s_state->rootDist) {
       /* Changing parent won't matter if this case */

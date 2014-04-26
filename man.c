@@ -516,8 +516,10 @@ while(1) {
    else if (cmd == 'z') {
       manRegName(&(manLinkArray->link[currhost]));
       manWaitForReply(&(manLinkArray->link[currhost]), cmd);
+      /*
       cmd = manGetUserCommand(currhost);
       manWaitForReply(&(manLinkArray->link[currhost]), cmd);
+      */
    }
    else printf("***Invalid command, you entered %c\n", cmd);
 }
