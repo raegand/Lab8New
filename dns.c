@@ -53,20 +53,25 @@ void dnsMain(dnsState * dstate)
       /* Check if there is an incoming packet */
       length = linkReceive(&(dstate->linkin), &tmpbuff);
       if(tmpbuff.type == 2) {
+      }
+      if (tmpbuff.dstaddr == dstate->netaddr && tmpbuff.valid == 1 && tmpbuff.type == 2) {
+         
          FILE * debug = fopen("DEBUG_DNS", "a");
          fprintf(debug, "Received DNS Packet! \n");
          fprintf(debug, "Data: %s \n", tmpbuff.payload);
-         fclose(debug); 
-      }
-      if (tmpbuff.dstaddr == dstate->netaddr && tmpbuff.valid == 1 && tmpbuff.type == 2) {
+         
          /* Do stuff with NTABLE + CHECK VALIDTY THEN RESPOND*/
          if(checkName(tmpbuff.payload, tmpbuff.length) == 1) {
             /* Passed name check, add to Ntable */
             UpdateNTableByAddress(&(dstate->n_table), tmpbuff.srcaddr, tmpbuff.payload);
+            fprintf(debug, "Data passed test!\n");
             dnsTransmitSuccess(dstate, tmpbuff.dstaddr);  
          } else {
             dnsTransmitFailure( dstate, tmpbuff.dstaddr);
+            fprintf(debug, "Data didn't pass test...\n");
          }
+     
+         fclose(debug); 
      }
      
       /* The host goes to sleep for 10 ms */
@@ -103,8 +108,12 @@ int checkName(char hname[], int length)
 {
    int i = 0;
    for(i; i < length; i++) {
-     int compare = hname[i] - '0';
-     if(compare != CHAR_PER && compare != CHAR_UNDSCR && (isNumber(compare) == 0) && (isLowerCaseLetter(compare) == 0) && (isUpperCaseLetter(compare) == 0)) {
+     int compare = (int)hname[i];
+     if(compare != CHAR_PER && 
+        compare != CHAR_UNDSCR && 
+        (isNumber(compare) == 0) && 
+        (isLowerCaseLetter(compare) == 0) && 
+        (isUpperCaseLetter(compare) == 0)) {
       return 0; // Invalid Character Detected
      }
    }
