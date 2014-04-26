@@ -52,8 +52,6 @@ void dnsMain(dnsState * dstate)
    while(1) {
       /* Check if there is an incoming packet */
       length = linkReceive(&(dstate->linkin), &tmpbuff);
-      if(tmpbuff.type == 2) {
-      }
       if (tmpbuff.dstaddr == dstate->netaddr && tmpbuff.valid == 1 && tmpbuff.type == 2) {
          
          FILE * debug = fopen("DEBUG_DNS", "a");
@@ -65,9 +63,9 @@ void dnsMain(dnsState * dstate)
             /* Passed name check, add to Ntable */
             UpdateNTableByAddress(&(dstate->n_table), tmpbuff.srcaddr, tmpbuff.payload);
             fprintf(debug, "Data passed test!\n");
-            dnsTransmitSuccess(dstate, tmpbuff.dstaddr);  
+            dnsTransmitSuccess(dstate, tmpbuff.srcaddr);  
          } else {
-            dnsTransmitFailure( dstate, tmpbuff.dstaddr);
+            dnsTransmitFailure( dstate, tmpbuff.srcaddr);
             fprintf(debug, "Data didn't pass test...\n");
          }
      

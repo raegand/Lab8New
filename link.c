@@ -234,6 +234,10 @@ int  k;
 char lowbits;
 char highbits;
 
+if(pbuff->type == 3) {
+   printf("length: %d \n", pbuff->length);
+}
+
 /* Check if this send should be aborted */
 if (pbuff->valid == 0) {
    printf("packet invalid\n");

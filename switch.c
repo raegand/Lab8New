@@ -141,6 +141,10 @@ void UpdateRoot(SwitchState* s_state, packetBuffer* pb)
       }
    }
 
+   if(pb->parent == 1) {
+         UpdateChildData(&(s_state->f_table), pb->srcaddr);
+   }
+
 
 }
 
