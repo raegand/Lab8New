@@ -1,5 +1,5 @@
 net367: host.o utilities.o link.o man.o main.o net.o table.o queue.o switch.o dns.o ntable.o
-	gcc -o net367 host.o utilities.o link.o man.o main.o net.o table.o queue.o switch.o dns.o ntable.o
+	gcc -o net367 host.o utilities.o link.o man.o main.o net.o table.o queue.o		 switch.o dns.o ntable.o
 
 main.o: main.c
 	gcc -c main.c
