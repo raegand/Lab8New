@@ -154,10 +154,12 @@ char word[1000];
 int length = 0;
 strcpy(reply, "");
 strcpy(word, "");
+do {
    usleep(TENMILLISEC); /* Go to sleep for 10 milliseconds */
    length = manReplyReceive(manLink, reply);
    findWord(word, reply, 1);
    if (strcmp(word, "DISPLAY")==0) manDisplayReplyMsg(reply);
+} while(length <= 1);
 }
 
 /* This displays the message after the first word on the user's console */

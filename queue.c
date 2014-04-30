@@ -45,7 +45,7 @@ int IsEmpty(Queue* queue) {
 void DisplayQueue(Queue* queue) {
 	int i = 0;
 	for (i; i < queue->size; i++) {
-		printf("%d\n", queue->elements[i].srcaddr);
+//		printf("%d\n", queue->elements[i].srcaddr);
 	}
 }
 

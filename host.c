@@ -534,9 +534,7 @@ void hostSetName(hostState * hstate, char hname[], char replymsg[])
    strcpy(replymsg, "Attempting to register name on DNS");
    /* Packet to DNS */
    packetBuffer temp;
-   printf("Name is %s \n", hname);
    strcpy(temp.payload, hname);
-   printf("Payload is %s \n", temp.payload);
    temp.type = 2; /* Should be 2 */
    temp.valid = 1;
    temp.srcaddr = hstate->physid;    
@@ -544,6 +542,7 @@ void hostSetName(hostState * hstate, char hname[], char replymsg[])
    temp.length = strlen(hname);
    temp.payload[temp.length] = '\0'; 
    linkSend(&(hstate->linkout), &temp);
+   hostReplySend(&(hstate->manLink), "DISPLAY",replymsg);
 
    packetBuffer rcv;
    hostInitRcvPacketBuff(&rcv);
