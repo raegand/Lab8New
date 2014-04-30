@@ -146,6 +146,20 @@ do {
 } while(length <= 1);
 }
 
+
+void manWaitForReplyOnce(managerLink * manLink, int cmd)
+{ 
+char reply[1000];
+char word[1000];
+int length = 0;
+strcpy(reply, "");
+strcpy(word, "");
+   usleep(TENMILLISEC); /* Go to sleep for 10 milliseconds */
+   length = manReplyReceive(manLink, reply);
+   findWord(word, reply, 1);
+   if (strcmp(word, "DISPLAY")==0) manDisplayReplyMsg(reply);
+}
+
 /* This displays the message after the first word on the user's console */
 void manDisplayReplyMsg(char replymsg[])
 {
@@ -516,6 +530,7 @@ while(1) {
    else if (cmd == 'z') {
       manRegName(&(manLinkArray->link[currhost]));
       manWaitForReply(&(manLinkArray->link[currhost]), cmd);
+      manWaitForReplyOnce(&(manLinkArray->link[currhost]), cmd);
    }
    else printf("***Invalid command, you entered %c\n", cmd);
 }

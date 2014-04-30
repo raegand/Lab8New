@@ -317,12 +317,6 @@ appendWithSpace(sendbuff, word);
    case 2: 
       int2Ascii(word, pbuff->length);  /* Append payload length */
       appendWithSpace(sendbuff, word);
-
-/*
-      printf("Length of payload is: %d \n", pbuff->length);
-      printf("Payload is: %s \n", pbuff->payload);
-*/
-
       break;
    }
 

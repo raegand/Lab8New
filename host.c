@@ -290,16 +290,8 @@ while(1) {
            memset(hstate->rcvBuffer.data, 0, sizeof(hstate->rcvBuffer.data));
            hstate->rcvBuffer.length = 0;
            hstate->rcvflag = 0;
-	  } else if(tmpbuff.dstaddr == hstate->netaddr && tmpbuff.valid == 1 && tmpbuff.type == 3)
-     {
-        if (tmpbuff.flag == 1) {
-         strcpy(replymsg, "Host name succesfully registered.");
-        } else {
-         strcpy(replymsg, "Host name failed to register.");
-        }
-		   hostReplySend(&(hstate->manLink), "DISPLAY",replymsg);
-     }
-	  
+	  } 
+     
      strcat(hstate->rcvBuffer.data, tmpbuff.payload);
 	  hstate->rcvBuffer.length += tmpbuff.length;
 	  hstate->rcvBuffer.srcaddr = tmpbuff.srcaddr;
@@ -552,6 +544,21 @@ void hostSetName(hostState * hstate, char hname[], char replymsg[])
    temp.length = strlen(hname);
    temp.payload[temp.length] = '\0'; 
    linkSend(&(hstate->linkout), &temp);
+
+   packetBuffer rcv;
+   hostInitRcvPacketBuff(&rcv);
+   int size = 0;
+   size = linkReceive(&(hstate->linkin), &rcv);
+   while(rcv.type != 3 || rcv.valid != 1 || rcv.dstaddr != hstate->netaddr)   {
+      size = linkReceive(&(hstate->linkin), &rcv);
+   }
+
+   if (rcv.flag == 1) {
+    strcpy(replymsg, "Host name succesfully registered.");
+   } else {
+    strcpy(replymsg, "Host name failed to register.");
+   }
+   hostReplySend(&(hstate->manLink), "DISPLAY",replymsg);
 }
 
 /*
