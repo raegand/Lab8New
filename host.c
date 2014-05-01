@@ -246,7 +246,6 @@ while(1) {
       else if (strcmp(word, "RegHostName")==0) {
          findWord(word, buffer, 2); /* Find directory name */
          hostSetName(hstate, word, replymsg);
-         hostReplySend(&(hstate->manLink),"DISPLAY",replymsg);
       }
       else if (strcmp(word, "ClearRcvFlg")==0) {
          hostClearRcvFlg(hstate, replymsg);
@@ -543,7 +542,8 @@ void hostSetName(hostState * hstate, char hname[], char replymsg[])
    temp.payload[temp.length] = '\0'; 
    linkSend(&(hstate->linkout), &temp);
    hostReplySend(&(hstate->manLink), "DISPLAY",replymsg);
-
+   
+   strcpy(replymsg, ""); //Clear reply buffer
    packetBuffer rcv;
    hostInitRcvPacketBuff(&rcv);
    int size = 0;
