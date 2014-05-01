@@ -48,8 +48,8 @@
 
 #define PIPEREAD  0
 #define PIPEWRITE 1
-//#define PACKET_SIZE 414
-#define PACKET_SIZE 1000
+#define PACKET_SIZE 422
+//#define PACKET_SIZE 1000
 
 /* Closes a link */
 int linkClear(LinkInfo * link)

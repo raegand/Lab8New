@@ -183,7 +183,6 @@ void switchMain(SwitchState* s_state) {
 				out_link = GetOutLink(&(s_state->f_table), tmpbuff.dstaddr);
 				/* if inside table */
 				if (out_link != ERROR) {
-					printf("%d \n", out_link);
                linkSend(&(s_state->link_out[out_link]), &tmpbuff);
 				} else {
                /* we know we that we have the srcaddr link b/c we input it
