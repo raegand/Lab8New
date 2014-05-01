@@ -11,6 +11,7 @@ typedef struct { /* Packet buffer */
    int type; /* type of packet */
    int root; /* current root data */
    int distance; 
+   int dnsaddr; /* address response from DNS*/
    int valid;
    int parent; /* Sends flag "You are my parent" */
    int flag; /* flag for success or failure */

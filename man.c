@@ -136,6 +136,7 @@ void manWaitForReply(managerLink * manLink, int cmd)
 char reply[1000];
 char word[1000];
 int length;
+strcpy(reply, "");
 
 do {
    usleep(TENMILLISEC); /* Go to sleep for 10 milliseconds */
@@ -189,6 +190,8 @@ while(1) {
    printf("   (m) Set host's main directory\n");
    printf("   (f) Clear host's receive packet buffer\n");
    printf("   (z) Register hostname to DNS\n");
+   printf("   (k) Request Address from DNS\n");
+   printf("   (a) Request File Download\n");
    printf("   (r) Download host's receive packet buffer into a file\n");
    printf("   (u) Upload file into host's send packet buffer\n");
    printf("   (t) Transmit packet from the host's send packet buffer\n");
@@ -206,6 +209,8 @@ while(1) {
    else if (cmd == 's') return cmd;
    else if (cmd == 'm') return cmd;
    else if (cmd == 'f') return cmd;
+   else if (cmd == 'k') return cmd;
+   else if (cmd == 'a') return cmd;
    else if (cmd == 'r') return cmd;
    else if (cmd == 'u') return cmd;
    else if (cmd == 't') return cmd;
@@ -340,6 +345,23 @@ appendWithSpace(command, dirname);
 manCommandSend(manLink, command);
 }
 
+void manReqAddr(managerLink * manLink)
+{
+   char hostname[50];
+   char command[1000];
+
+   /* Get the directory name */
+   printf("Enter host name: ");
+   scanf("%s", hostname);
+
+   /* Create the command message */
+   command[0] = '\0'; /* Initialize command to the empty string */
+   appendWithSpace(command, "ReqHostAddr");
+   appendWithSpace(command, hostname);
+
+   /* Send the command message */
+   manCommandSend(manLink, command);
+}
 
 void manRegName(managerLink * manLink)
 {
@@ -533,6 +555,10 @@ while(1) {
       manRegName(&(manLinkArray->link[currhost]));
       manWaitForReply(&(manLinkArray->link[currhost]), cmd);
       manWaitForReplyOnce(&(manLinkArray->link[currhost]), cmd);
+   }
+   else if (cmd == 'k') {
+      manReqAddr(&(manLinkArray->link[currhost]));
+      manWaitForReply(&(manLinkArray->link[currhost]), cmd);
    }
    else printf("***Invalid command, you entered %c\n", cmd);
 }

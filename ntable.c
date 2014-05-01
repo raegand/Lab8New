@@ -17,6 +17,17 @@ int isNTableEmpty(NameTable * table)
    }
 }
 
+int FindNTableName(NameTable * table, char name[])
+{
+   int i = 0; 
+   for(i; i < table->size; i++) {
+      if(strcmp(table->entries[i].name, name) == 0) {
+         return table->entries[i].dest_Id;
+      }
+   } 
+   return 255;
+}
+
 int FindNTableIndex(NameTable * table, int addr)
 {
    int i = 0;

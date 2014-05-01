@@ -92,6 +92,7 @@ void hostInitSendPacketBuff(packetBuffer * packetbuff);
  */
 int  hostCommandReceive(managerLink * manLink, char command[]);
 
+void hostReqAddr(hostState * hstate, char hname[], char replymsg[]);
 void hostSetNetAddr(hostState * hstate, int netaddr, char replymsg[]);
 void hostSetMainDir(hostState * hstate, char filename[], char replymsg[]);
 void hostSetName(hostState * hstate, char hname[], char replymsg[]);
@@ -242,6 +243,10 @@ while(1) {
          findWord(word, buffer, 2); /* Find directory name */
          hostSetMainDir(hstate, word, replymsg);
          hostReplySend(&(hstate->manLink),"DISPLAY",replymsg);
+      }
+      else if (strcmp(word, "ReqHostAddr")==0) {
+         findWord(word, buffer, 2); /* Find directory name */
+         hostReqAddr(hstate, word, replymsg);
       }
       else if (strcmp(word, "RegHostName")==0) {
          findWord(word, buffer, 2); /* Find directory name */
@@ -525,6 +530,43 @@ hstate->maindirvalid = 1;
 
 /* Message to the manager */
 strcpy(replymsg, "Host's main directory name is changed");
+}
+
+
+void hostReqAddr(hostState * hstate, char hname[], char replymsg[])
+{
+   /* Packet to DNS */
+   packetBuffer temp;
+   strcpy(temp.payload, hname);
+   temp.type = 4; /* Should be 4 */
+   temp.valid = 1;
+   temp.srcaddr = hstate->physid;    
+   temp.dstaddr = 100;/* Address of DNS */
+   temp.length = strlen(hname);
+   temp.payload[temp.length] = '\0'; 
+   linkSend(&(hstate->linkout), &temp);
+   
+   strcpy(replymsg, ""); //Clear reply buffer
+   packetBuffer rcv;
+   hostInitRcvPacketBuff(&rcv);
+   int size = 0;
+   size = linkReceive(&(hstate->linkin), &rcv);
+   while(rcv.type != 5 || rcv.valid != 1 || rcv.dstaddr != hstate->netaddr)   {
+      size = linkReceive(&(hstate->linkin), &rcv);
+   }
+
+   char buff[20];
+   buff[0] = '\0'; //init to blank
+   int2Ascii(buff, rcv.dnsaddr);
+
+   if (rcv.dnsaddr != 255) {
+    strcpy(replymsg, "Host address is ");
+    strcat(replymsg, " ");
+    strcat(replymsg, buff);
+   } else {
+    strcpy(replymsg, "Name did not match any host registered on DNS Server \n");
+   }
+   hostReplySend(&(hstate->manLink), "DISPLAY",replymsg);
 }
 
 void hostSetName(hostState * hstate, char hname[], char replymsg[])

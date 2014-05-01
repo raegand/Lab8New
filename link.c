@@ -121,12 +121,13 @@ if (link->linkType==UNIPIPE) {
     * DNS REQ = 4;
     * DL REQ = 5;
     *
-    * DATA: DST,SRC,TYPE,LENGTH,END,START
-    * INFO: DST,SRC,TYPE,ROOT, DIST, LENGTH
-    * DNS NAME: DST, SRC, TYPE, LENGTH, NAME
-    * DNS ACK: DST, SRC, TYPE, FLAG, LENGTH
-    * DNS REQ: DST, SRC, TYPE, LENGTH, NAME
-    * DL REQ: DST, SRC, TYPE, LENGTH, NAME
+    * 0: DATA: DST,SRC,TYPE,LENGTH,END,START
+    * 1: INFO: DST,SRC,TYPE,ROOT, DIST, LENGTH
+    * 2: DNS NAME: DST, SRC, TYPE, LENGTH, NAME
+    * 3: DNS ACK: DST, SRC, TYPE, FLAG, LENGTH
+    * 4: DNS REQ: DST, SRC, TYPE, LENGTH, NAME
+    * 5: DNS REP: DST, SRC, TYPE, ADDR
+    * 6: DL REQ: DST, SRC, TYPE, LENGTH, NAME
     *
     */
 
@@ -168,7 +169,6 @@ if (link->linkType==UNIPIPE) {
          
          findWord(word, buffer, 7); /* Length */
          pbuff->length = ascii2Int(word);
-
          break;
       case 3: 
          findWord(word, buffer, 4);
@@ -177,8 +177,12 @@ if (link->linkType==UNIPIPE) {
          findWord(word, buffer, 5); /* Length */
          pbuff->length = ascii2Int(word);
          break;
+      case 5:
+         findWord(word, buffer, 4);
+         pbuff->dnsaddr = ascii2Int(word);  /* Address  */
+         break;
       case 4: /* Same as DNS PACKET, Length then Payload  */
-      case 5: /* Same as DNS PACKET, Length then Payload  */
+      case 6: /* Same as DNS PACKET, Length then Payload */
       case 2: 
          findWord(word, buffer, 4); /* Length */
          pbuff->length = ascii2Int(word);
@@ -312,8 +316,12 @@ appendWithSpace(sendbuff, word);
       int2Ascii(word, pbuff->length);  /* Append payload length */
       appendWithSpace(sendbuff, word);
       break;
+   case 5: 
+      int2Ascii(word, pbuff->dnsaddr); /* Current root */
+      appendWithSpace(sendbuff, word);
+      break;
    case 4: /* Same as DNS Packet; Length then PAYLOAD */
-   case 5: /* Same as DNS Packet; Length then PAYLOAD */
+   case 6: /* Same as DNS Packet; Length then PAYLOAD */
    case 2: 
       int2Ascii(word, pbuff->length);  /* Append payload length */
       appendWithSpace(sendbuff, word);

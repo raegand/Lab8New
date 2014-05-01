@@ -13,6 +13,7 @@ typedef struct {
 } NameTable;
 
 void InitNTable(NameTable * table);
+int FindNTableName(NameTable * table, char name[]);
 int FindNTableIndex(NameTable * table, int addr);
 void AddNTable(NameTable * table, int addr, char name[]);
 void UpdateNTableByAddress(NameTable * table, int addr, char name[]);

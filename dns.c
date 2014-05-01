@@ -28,6 +28,7 @@ void dnsInitState(dnsState* dstate, int physid);
 void dnsInitRcvPacketBuff(packetBuffer * packetbuff);
 void dnsInitTransmit(dnsState * dstate, char word[], char replymsg[]);
 void dnsTransmitSuccess(dnsState * dstate, int dstaddr);
+void dnsTransmitAddress(dnsState * dstate, int dstaddr, char payload[]);
 void dnsTransmitFailure(dnsState * dstate, int dstaddr);
 int checkName(char hname[], int length);
 int isNumber(int x);
@@ -65,11 +66,26 @@ void dnsMain(dnsState * dstate)
          }
           
           fclose(debug); 
+     } else if (tmpbuff.dstaddr == dstate->netaddr && tmpbuff.valid == 1 && tmpbuff.type == 4) {
+         dnsTransmitAddress(dstate, tmpbuff.srcaddr, tmpbuff.payload);
      }
       /* The host goes to sleep for 10 ms */
       usleep(TENMILLISEC);
       DNSDebugTable(&(dstate->n_table));
    } /* End of while loop */
+}
+
+void dnsTransmitAddress(dnsState * dstate, int dstaddr, char payload[])
+{
+   int addr = FindNTableName(&(dstate->n_table), payload);
+   packetBuffer tmp;
+   tmp.type = DNSREP;
+   tmp.srcaddr = dstate->physid;
+   tmp.dstaddr = dstaddr;
+   tmp.dnsaddr = addr;
+   tmp.length = 1;
+   tmp.valid = 1;
+   linkSend(&(dstate->linkout), &tmp);
 }
 
 void dnsTransmitSuccess(dnsState * dstate, int dstaddr)
