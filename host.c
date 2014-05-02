@@ -316,7 +316,7 @@ while(1) {
 		  hstate->rcvflag = 1;
 		  hstate->rcvBuffer.valid = 1;
 	  }
-   } else if (tmpbuff.dstaddr == hstate->netaddr && tmpbuff.valid == 1 && tmpbuff.type == 5) {
+   } else if (tmpbuff.dstaddr == hstate->netaddr && tmpbuff.valid == 1 && tmpbuff.type == 6) {
       hostUploadAndTransmit(hstate, tmpbuff.payload, tmpbuff.srcaddr);
    }
 
@@ -471,8 +471,6 @@ void hostUploadPacket(hostState * hstate, char fname[], char replymsg[])
 
 void hostUploadAndTransmit(hostState * hstate, char fname[], int src)
 {
-
-   printf("received packet\n");
 	char c;
 	FILE * fp;
 	char path[MAXBUFFER];  /* Path to the file */
