@@ -2,7 +2,7 @@
  * This is the source code for the host.  
  * hostMain is the main function for the host.  It is an infinite
  * loop that repeatedy polls the connection from the manager and
- * its input link.  
+/bin/bash: 6: command not found
  *
  * If there is command message from the manager,
  * it parses the message and executes the command.  This will
@@ -41,6 +41,10 @@
 #define PIPEREAD  0
 #define TENMILLISEC 10000   /* 10 millisecond sleep */
 
+void hostUploadAndTransmit(hostState * hstate, char fname[], int src);
+void hostRequestFile(hostState * hstate, char filename[], int addr); 
+void hostSilentTransmitPacket(hostState * hstate); 
+void hostSilentInitTransmit(hostState * hstate, int src); 
 void writeHostData(hostState * hstate) 
 {
    /* Writes switch data to file for debug purposes */
@@ -274,6 +278,14 @@ while(1) {
 		 hostInitTransmit(hstate, buffer, replymsg);
 		 hostReplySend(&(hstate->manLink), "DISPLAY",replymsg);
       }
+      else if (strcmp(word, "RequestFile")==0) {
+       char filename[100];
+       char dest[10];
+       findWord(filename, buffer, 2); /* file name is apeended before addr*/
+       findWord(dest, buffer, 3); /* Address is appended after filename */
+       int addr = ascii2Int(dest); 
+       hostRequestFile(hstate, filename, addr);
+      }
    } /* end of if */
 
    if (hstate->sendBuffer.busy == 1) {
@@ -304,6 +316,8 @@ while(1) {
 		  hstate->rcvflag = 1;
 		  hstate->rcvBuffer.valid = 1;
 	  }
+   } else if (tmpbuff.dstaddr == hstate->netaddr && tmpbuff.valid == 1 && tmpbuff.type == 5) {
+      hostUploadAndTransmit(hstate, tmpbuff.payload, tmpbuff.srcaddr);
    }
 
    writeHostData(hstate); 
@@ -314,6 +328,9 @@ while(1) {
 } /* End of while loop */
 
 }
+
+
+
 
 /*
  * Sets the host's network address.  Also creates a reply message
@@ -452,6 +469,106 @@ void hostUploadPacket(hostState * hstate, char fname[], char replymsg[])
 	fclose(fp);
 }
 
+void hostUploadAndTransmit(hostState * hstate, char fname[], int src)
+{
+
+   printf("received packet\n");
+	char c;
+	FILE * fp;
+	char path[MAXBUFFER];  /* Path to the file */
+	char tempbuff[MAXBUFFER]; /* A temporary buffer */
+	int length;
+	int i;
+
+	strcat(path, fname);
+	fp = fopen(path,"rb"); 
+	if (fp == NULL) { /* file didn't open */
+		return;
+	}
+
+	length = fread(tempbuff, 1, MAX_DATA_LENGTH+1, fp);
+	if (length==0) {
+		return;
+	}
+	else if (length > MAX_DATA_LENGTH) {
+		return;
+	}
+
+	tempbuff[length] = '\0';
+	/* Fill in send packet buffer */
+	hstate->sendBuffer.valid = 1;
+	hstate->sendBuffer.length = length;
+
+	memset(hstate->sendBuffer.data, 0, sizeof(hstate->sendBuffer.data));
+	for (i=0; i<length; i++) { /* Store tempbuff in payload of packet buffer */
+		hstate->sendBuffer.data[i] = tempbuff[i];
+	}
+	
+   fclose(fp);
+   hostSilentInitTransmit(hstate, src);
+   hostSilentTransmitPacket(hstate);
+}
+
+void hostSilentInitTransmit(hostState * hstate, int src) 
+{
+	if (hstate->sendBuffer.busy == 1) {
+		return;
+	}
+	if (hstate->sendBuffer.valid == 0) {
+		return;
+	}
+
+	hstate->sendBuffer.dstaddr = src;
+	hstate->sendBuffer.busy = 1;
+	hstate->sendBuffer.pos = 0;
+}
+
+void hostSilentTransmitPacket(hostState * hstate) 
+{
+	int i = 0;
+	int length = hstate->sendBuffer.length - hstate->sendBuffer.pos;
+	int error = 0;
+	if (length > PAYLOAD_LENGTH) {
+		length = PAYLOAD_LENGTH;	
+	}
+	
+   hstate->sendPacketBuff.dstaddr = hstate->sendBuffer.dstaddr;
+	hstate->sendPacketBuff.srcaddr = hstate->netaddr;
+	hstate->sendPacketBuff.length = length;
+	hstate->sendPacketBuff.type = 0;
+   hstate->sendPacketBuff.end = 0;
+	hstate->sendPacketBuff.start = 0;
+	hstate->sendPacketBuff.root = 0;
+   hstate->sendPacketBuff.distance = 0;
+   
+   if (hstate->sendBuffer.pos == 0) {
+		hstate->sendPacketBuff.start = 1;
+	}
+	if (hstate->sendBuffer.valid) {
+		hstate->sendPacketBuff.valid = 1;
+	}
+
+	for (i = 0; i < length; i++) {
+		hstate->sendPacketBuff.payload[i] = 
+			hstate->sendBuffer.data[i+hstate->sendBuffer.pos];
+	}
+
+	hstate->sendBuffer.pos += length;
+
+	if (hstate->sendBuffer.pos >= hstate->sendBuffer.length) {
+		hstate->sendBuffer.pos = 0;
+		hstate->sendBuffer.busy = 0;
+		hstate->sendPacketBuff.end = 1;
+	}
+	
+	error = linkSend(&(hstate->linkout), &(hstate->sendPacketBuff));
+	if (error == -1) {
+		hostInitDataBuffer(&(hstate->sendBuffer));
+		return;
+	}
+}
+
+
 /* 
  * Initialize receive packet buffer 
  */ 
@@ -567,6 +684,24 @@ void hostReqAddr(hostState * hstate, char hname[], char replymsg[])
     strcpy(replymsg, "Name did not match any host registered on DNS Server \n");
    }
    hostReplySend(&(hstate->manLink), "DISPLAY",replymsg);
+}
+
+void hostRequestFile(hostState * hstate, char filename[], int addr)  
+{
+   packetBuffer temp;
+   strcpy(temp.payload, filename);
+   temp.type = 6;
+   temp.valid = 1;
+   temp.srcaddr = hstate->physid;
+   temp.dstaddr = addr;
+   temp.length = strlen(filename);
+   temp.payload[temp.length] = '\0';
+   
+   linkSend(&(hstate->linkout), &temp);
+    
+   char reply[1000];
+   strcpy(reply, "File request sent..\n");
+   hostReplySend(&(hstate->manLink), "DISPLAY", reply);
 }
 
 void hostSetName(hostState * hstate, char hname[], char replymsg[])

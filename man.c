@@ -345,6 +345,31 @@ appendWithSpace(command, dirname);
 manCommandSend(manLink, command);
 }
 
+void manFileRequest(managerLink * manLink)
+{
+char filename[1000];
+char hostaddr[1000];
+char command[1000];
+
+/* Get the directory name */
+printf("File name (including path if not in host dir): ");
+scanf("%s",filename);
+
+printf("Entering host address to request file from: ");
+scanf("%s", hostaddr);
+
+/* Create the command message */
+command[0] = '\0'; /* Initialize command to the empty string */
+appendWithSpace(command, "RequestFile");
+appendWithSpace(command, filename);
+appendWithSpace(command, hostaddr);
+
+findWord(hostaddr, command, 3);
+/* Send the command message */
+manCommandSend(manLink, command);
+}
+
+
 void manReqAddr(managerLink * manLink)
 {
    char hostname[50];
@@ -558,6 +583,10 @@ while(1) {
    }
    else if (cmd == 'k') {
       manReqAddr(&(manLinkArray->link[currhost]));
+      manWaitForReply(&(manLinkArray->link[currhost]), cmd);
+   }
+   else if (cmd == 'a') {
+      manFileRequest(&(manLinkArray->link[currhost]));
       manWaitForReply(&(manLinkArray->link[currhost]), cmd);
    }
    else printf("***Invalid command, you entered %c\n", cmd);
