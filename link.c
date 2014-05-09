@@ -67,6 +67,7 @@ int linkCreate(LinkInfo * link)
 {
 int flag;
 
+link->uniPipeInfo.type = PIPE; //Set type to PIPE
 if (link->linkType == UNIPIPE) {
    if (pipe(link->uniPipeInfo.fd) < 0) {
       printf("Creating a pipe failed\n");
@@ -77,6 +78,8 @@ if (link->linkType == UNIPIPE) {
       fcntl(link->uniPipeInfo.fd[0], F_SETFL, flag|O_NONBLOCK);
       flag = fcntl(link->uniPipeInfo.fd[1], F_GETFL);
       fcntl(link->uniPipeInfo.fd[1], F_SETFL, flag|O_NONBLOCK);
+      link->uniPipeInfo.PortSrc = -1; //Have no values for Ports
+      link->uniPipeInfo.PortDst = -1;
    }
    else printf("LinkCreate:  unknown unipipe type\n");
    return 0;
@@ -85,6 +88,13 @@ else {
    printf("Link not created:  invalid type\n");
    return -1;
 }
+}
+
+void socketCreate(LinkInfo * link, int src, int dst)
+{
+   link->uniPipeInfo.type = SOCKET;
+   link->uniPipeInfo.PortSrc = src;
+   link->uniPipeInfo.PortDst = dst;
 }
 
 /*
@@ -222,6 +232,7 @@ return n; /* Return length what was received on the link */
 
 /*
  * Sends the packet in pbuff on the outgoing link.
+ * Rewrite to have port number?
  */
 int linkSend(LinkInfo * link, packetBuffer * pbuff)
 {

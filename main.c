@@ -3,7 +3,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-
+//#include "socket.h"
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -35,6 +35,17 @@ manLinkArrayType manLinkArray;
 SwitchState s_state;
 dnsState d_state;
 
+PortManager pm[MAX_LINKS];
+int z;
+for(z = 0; z < MAX_LINKS; z++) {
+   pm[z].link_num = 0;
+   pm[z].dst = 0;
+   pm[z].src= 0;
+   pm[z].portdst = -1;
+   pm[z].portsrc = - 1;
+   pm[z].type = PIPE;
+}
+
 pid_t pid;  /* Process id */
 int physid; /* Physical ID of host */
 int i;
@@ -45,13 +56,16 @@ char word[MAX_WORD_SIZE];
 printf("Enter a filename: ");
 scanf("%s",	filename);
 
+/*
 int src[MAX_LINKS];
 int dst[MAX_LINKS];
-int count = 0;
+*/
 
+int count = 0;
 int num_hosts = -1;
 int num_links = -1;
 int num_switches = -1;
+int num_sockets = 0;
 
 FILE* file = fopen(filename, "r");
 if (file != NULL) {
@@ -63,13 +77,22 @@ if (file != NULL) {
 	num_links = ascii2Int(word);
 	findWord(word, line, 3);
 	num_switches = ascii2Int(word);
+	findWord(word, line, 4);
+	num_sockets = ascii2Int(word);
 
 	while (fgets(line, sizeof line, file) != NULL) {
 		findWord(word, line, 1);
-		src[count] = ascii2Int(word);
+		pm[count].src = ascii2Int(word);
 		findWord(word, line, 2);
-		dst[count] = ascii2Int(word);
-		count++;
+		pm[count].dst = ascii2Int(word);
+      findWord(word, line, 3); //PORT #1
+      if(strcmp(word, "0") != 0) {
+         pm[count].type = SOCKET;
+         pm[count].portsrc = ascii2Int(word); 
+         findWord(word, line, 4); //PORT #2
+         pm[count].portdst = ascii2Int(word);
+      }
+      count++;
 	}
 	fclose(file);
 } else {
@@ -83,10 +106,14 @@ if (num_hosts == -1 || num_links == -1 || num_switches == -1)
 	return;
 } 
 
-/* OLD
-else if (count != num_links/2 || num_links%2 != 0) {
+for(z = 0; z < num_links + num_sockets; z++) {
+   printf("linkid: %d \n", pm[z].link_num);
+   printf("dst: %d \n", pm[z].dst);
+   printf("src:%d, dst:%d \n", pm[z].src, pm[z].dst);
+   printf("type: %d \n", pm[z].type);
+   printf("portsrc:%d, portdst:%d \n", pm[z].portsrc, pm[z].portdst);
 }
-*/
+return; //break here for now
 
 manLinkArray.link = (managerLink*)malloc(num_hosts*sizeof(managerLink));
 linkArray.link = (LinkInfo*)malloc(num_links*sizeof(LinkInfo));
@@ -106,47 +133,39 @@ netCreateLinks(& linkArray);
 
 /* Set the end nodes of the links */
 
-netSetNetworkTopology(& linkArray, src, dst);
+//netSetNetworkTopology(& linkArray, src, dst);
 
 /* Create nodes and spawn their own processes, one process per node */ 
 /* physid corresponds to the unique host id */
 for (physid = 0; physid < num_hosts; physid++) {
-
 	pid = fork();
-
 	if (pid == -1) { printf("Error:  the fork() failed\n");
 		return;
 	}
 	else if (pid == 0) { /* The child process -- a host node */
 
 		hostInit(&hstate, physid);              /* Initialize host's state */
-
 		/* Initialize the connection to the manager */ 
 		hstate.manLink = manLinkArray.link[physid];
-
 		/* 
 		 * Close all connections not connect to the host
 		 * Also close the manager's side of connections to host
 		 */
 		netCloseConnections(& manLinkArray, physid);
 
-		/* Initialize the host's incident communication links */
-
-		k = netHostOutLink(&linkArray, physid); /* Host's outgoing link */
-		hstate.linkout = linkArray.link[k];
-
-		k = netHostInLink(&linkArray, physid); /* Host's incoming link */
-		hstate.linkin = linkArray.link[k];
-
-		/* Close all other links -- not connected to the host */
-		netCloseHostOtherLinks(& linkArray, physid);
-
-		/* Go to the main loop of the host node */
-		hostMain(&hstate);
 		free(manLinkArray.link);
-		free(s_state.link_in);
-		free(s_state.link_out);
-		free(linkArray.link);
+     
+         /* Initialize the host's incident communication links */
+         k = netHostOutLink(&linkArray, physid); /* Host's outgoing link */
+         hstate.linkout = linkArray.link[k];
+         k = netHostInLink(&linkArray, physid); /* Host's incoming link */
+         hstate.linkin = linkArray.link[k];
+         /* Close all other links -- not connected to the host */
+         netCloseHostOtherLinks(& linkArray, physid);
+         free(s_state.link_in);
+         free(s_state.link_out);
+         free(linkArray.link);
+		hostMain(&hstate);
 	}  
 }
 

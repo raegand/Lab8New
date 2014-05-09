@@ -7,8 +7,6 @@
 #include "main.h"
 #include "databuff.h"
 
-/* #define NUMLINKS 6 */
-
 enum LinkType {UNIPIPE}; /* UNIPIPE = unidirectional pipe
                           * We can add more types later
                           */
@@ -20,6 +18,8 @@ typedef struct {
    int         fd[2];
    int         physIdSrc;
    int	       physIdDst;
+   int   PortSrc, PortDst;
+   int type;
 } UniPipeInfo;
 
 typedef struct {  /* Has all the information to implement a link */
@@ -39,6 +39,8 @@ int linkSend(LinkInfo * link, packetBuffer * pbuff);
 
 /* Downloads a packet from the link into pbuff */
 int linkReceive(LinkInfo * link, packetBuffer * pbuff);
+
+void socketCreate(LinkInfo * link, int src, int dst);
 
 /* Closes a link */
 int linkClear(LinkInfo * link);

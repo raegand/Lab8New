@@ -1,6 +1,8 @@
 #ifndef UTILITIES_H_
 #define UTILITIES_H_
 
+#define PIPE 0
+#define SOCKET 1
 #define DATA 0 
 #define INFO 1
 #define DNSNAME 2
