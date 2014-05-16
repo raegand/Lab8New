@@ -8,6 +8,7 @@ virtualnetwork2
 - Keeps track of children and parents through "INFO" packets
 - Maintains distance from Root
 - DNS server complete, can register name with Host, respond to address requests
+- Supports download request over network
 
 ##Team:
  - Andy Ng
