@@ -11,9 +11,12 @@ A [CONNECTION] is either a SOCKET or a LINK
 ----------------------------------------------
 
 A is an INTEGER that corresponds to the NUMBER OF HOSTS
-B is an INTEGER that corresponds to the NUMBER OF LINKS
+B is an INTEGER that corresponds to the NUMBER OF LINKS x 2
 C is an INTEGER that corresponds to the NUMBER OF SWITCHES
-D is an INTEGER that corresponds to the NUMBER OF SOCKETS
+D is an INTEGER that corresponds to the NUMBER OF SOCKETS x 2
+
+** Since links are assumed to be BIDIRECTIONAL you need to set mumber of links
+or sockets to be 2 times the number of "physical" links. 
 
 
 -->The rest of the lines are used to setup links and connections between
